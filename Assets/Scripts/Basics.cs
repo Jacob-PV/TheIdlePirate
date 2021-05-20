@@ -10,28 +10,8 @@ public class Basics : MonoBehaviour
     public double goldPerSec;
     public Text goldText;
     public bool doUpdateCrewMenuText;
-    // shovel vars
-    // public Pirate shovel = new Pirate("Shovel",1,1,10,1);
-    
-    // public Text shovelUpgradeText;
-    // scouter vars
-    // public Pirate scouter = new Pirate("Scouter",0,0,100,2);
-    
-    // public Text scouterUpgradeText;
-    // hunter vars
-    // public Pirate hunter = new Pirate("Hunter", 0,0,1000,4);
-    
-    // public Text hunterUpgradeText;
-    // soldier Vars
-    
-    // public Pirate soldier = new Pirate("Soldier",0,0,10000,8);
-    // public Text soldierUpgradeText;
-    // captain vars
-    // public Pirate captain = new Pirate("Captain", 0,0,100000,16);
-    
-    // public Text captainUpgradeText;
 
-    // crew
+    // crew arrays
     const int numCrew = 5;
     public Pirate[] crew = {
         new Pirate("Shovel",1,1,10,1),
@@ -42,15 +22,14 @@ public class Basics : MonoBehaviour
     };
     public Text[] headerText = new Text[numCrew];
     public Text[] upgradeText = new Text[numCrew];
-
+    public double gg;
     
-
     // Start is called before the first frame update
     void Start()
     {
         creatText();
         doUpdateCrewMenuText = true;
-        // Load();
+        Load();
         UpdateCrewText();
         InvokeRepeating("Save",5f,5f);
     }
@@ -58,6 +37,7 @@ public class Basics : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        gg = crew[1].m_clickPower;
         // header
         numGold += goldPerSec;
         goldText.text = "Gold: " + DisplayNumber(numGold);
@@ -78,40 +58,16 @@ public class Basics : MonoBehaviour
     }
 
     // upgrade funcitons
-    public void ShovelUpgrade()
+    public void Upgrade(int i)
     {
-        numGold -= crew[0].Upgrade(numGold);
-        doUpdateCrewMenuText = crew[0].m_didUpdate;
+        numGold -= crew[i].Upgrade(numGold);
+        doUpdateCrewMenuText = crew[i].m_didUpdate;
     }
-
-    public void ScouterUpgrade()
-    {
-        numGold -= crew[1].Upgrade(numGold);
-        doUpdateCrewMenuText = crew[1].m_didUpdate;
-    }
-
-    public void HunterUpgrade()
-    {
-        numGold -= crew[2].Upgrade(numGold);
-        doUpdateCrewMenuText = crew[2].m_didUpdate;
-    }
-
-    public void SoldierUpgrade()
-    {
-        numGold -= crew[3].Upgrade(numGold);
-        doUpdateCrewMenuText = crew[3].m_didUpdate;
-    }
-
-    public void CaptainUpgrade()
-    {
-        numGold -= crew[4].Upgrade(numGold);
-        doUpdateCrewMenuText = crew[4].m_didUpdate;
-    }
-
 
     // text functions
     private void getGoldSec()
     {
+        goldPerSec = 0;
         for(int i = 1; i < numCrew; i++)
         {
             goldPerSec += crew[i].m_clickPower * Time.deltaTime;
