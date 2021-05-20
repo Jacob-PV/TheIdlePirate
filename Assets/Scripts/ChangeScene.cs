@@ -7,18 +7,18 @@ public class ChangeScene : MonoBehaviour
 {
     static ChangeScene instance;
 
-    void Awake()
-    {
-        if(instance != null)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-    }
+    // void Awake()
+    // {
+    //     if(instance != null)
+    //     {
+    //         Destroy(gameObject);
+    //     }
+    //     else
+    //     {
+    //         instance = this;
+    //         DontDestroyOnLoad(gameObject);
+    //     }
+    // }
 
     public void Ship()
     {

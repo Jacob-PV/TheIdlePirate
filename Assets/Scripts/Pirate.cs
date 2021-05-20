@@ -64,6 +64,8 @@ public class Pirate
 
     public void UpdateText()
     {
+        m_upgradeCost = m_costBase * Mathf.Pow(m_level+1,m_costCoefficient);
+        m_upgradeCost = Mathf.Round((float)m_upgradeCost);
         m_headerText = m_name + ": " + m_clickPower + " Gold/Sec\nLevel " + m_level; 
         m_upgradeText = "Upgrade\nCost:\n" + m_upgradeCost;
     }

@@ -33,19 +33,21 @@ public class Basics : MonoBehaviour
 
     // crew
     int numCrew = 5;
-    public Pirate[] crew = {
-        new Pirate("Shovel2",1,1,10,1),
-        new Pirate("Scouter2",0,0,100,2)
-    };
+    // public Pirate[] crew = {
+    //     new Pirate("Shovel",1,1,10,1),
+    //     new Pirate("Scouter",0,0,100,2),
+    //     new Pirate("Hunter", 0,0,1000,4),
+    //     new Pirate("Soldier",0,0,10000,8),
+    //     new Pirate("Captain", 0,0,100000,16),
+    // };
 
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(crew[0].m_name);
         doUpdateCrewMenuText = true;
-        UpdateCrewText();
         Load();
-        // InvokeRepeating("Save",5f,5f);
+        UpdateCrewText();
+        InvokeRepeating("Save",5f,5f);
     }
 
     // Update is called once per frame
@@ -71,11 +73,10 @@ public class Basics : MonoBehaviour
     }
 
     // upgrade funcitons
-    public void ShovelUpgrade(Pirate name)
+    public void ShovelUpgrade()
     {
         numGold -= shovel.Upgrade(numGold);
         doUpdateCrewMenuText = shovel.m_didUpdate;
-        Debug.Log(name);
     }
 
     public void SoldierUpgrade()
@@ -133,9 +134,6 @@ public class Basics : MonoBehaviour
         // captain
         captainText.text = captain.m_headerText;
         captainUpgradeText.text = captain.m_upgradeText;
-        // reset 
-        Debug.Log("updated text");
-              
     }
 
     // display numbers
@@ -153,6 +151,8 @@ public class Basics : MonoBehaviour
     public void Load()
     {
         numGold = double.Parse(PlayerPrefs.GetString("numGold","0"));
+        goldPerSec = double.Parse(PlayerPrefs.GetString("goldPerSec","0"));
+
 
         // shovel
         shovel.m_level = PlayerPrefs.GetInt("shovel.m_level",0);
@@ -162,6 +162,9 @@ public class Basics : MonoBehaviour
     public void Save()
     {
         PlayerPrefs.SetString("numGold", numGold.ToString("f0"));
+        PlayerPrefs.SetString("goldPerSec", goldPerSec.ToString());
+        Debug.Log(goldPerSec);
+
 
         // shovel 
         PlayerPrefs.SetInt("shovel.m_level", shovel.m_level);
