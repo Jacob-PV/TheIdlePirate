@@ -15,7 +15,7 @@ public class Pirate
     private float m_costCoefficient;
     public bool m_didUpdate;
 
-    public Pirate(string name, int level = 0, double clickPower = 0, double costBase = 1, double clickBase = 1, float costCoefficient = 1.5f)
+    public Pirate(string name, int level = 0, double clickPower = 0, double costBase = 1, double clickBase = 1, float costCoefficient = 1.15f)
     {
         m_name = name;
         m_level = level;
@@ -43,7 +43,7 @@ public class Pirate
             m_clickPower = m_level * m_clickBase;
             // suggested 1.07 to 1.17
             // upgradeBase * (coefficent ^ numOwned)
-            m_upgradeCost = m_costBase * Mathf.Pow(m_level+1,m_costCoefficient);
+            m_upgradeCost = m_costBase * Mathf.Pow(m_costCoefficient,m_level);
             m_upgradeCost = Mathf.Round((float)m_upgradeCost);
             m_headerText = m_name + ": " + m_clickPower + " Gold/Sec\nLevel " + m_level; 
             m_upgradeText = "Upgrade\nCost:\n" + m_upgradeCost;
@@ -64,7 +64,7 @@ public class Pirate
 
     public void UpdateText()
     {
-        m_upgradeCost = m_costBase * Mathf.Pow(m_level+1,m_costCoefficient);
+        m_upgradeCost = m_costBase * Mathf.Pow(m_costCoefficient,m_level);
         m_upgradeCost = Mathf.Round((float)m_upgradeCost);
         m_headerText = m_name + ": " + m_clickPower + " Gold/Sec\nLevel " + m_level; 
         m_upgradeText = "Upgrade\nCost:\n" + m_upgradeCost;

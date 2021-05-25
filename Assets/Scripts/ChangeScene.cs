@@ -5,28 +5,24 @@ using UnityEngine.SceneManagement;
 
 public class ChangeScene : MonoBehaviour
 {
-    static ChangeScene instance;
+    public GameObject crewMenu;
+    public GameObject shipMenu;
 
-    // void Awake()
-    // {
-    //     if(instance != null)
-    //     {
-    //         Destroy(gameObject);
-    //     }
-    //     else
-    //     {
-    //         instance = this;
-    //         DontDestroyOnLoad(gameObject);
-    //     }
-    // }
+    void Start()
+    {
+        crewMenu.gameObject.SetActive(true);
+        shipMenu.gameObject.SetActive(false);
+    }
 
     public void Ship()
     {
-        SceneManager.LoadScene("ShipUpgrades");
+        crewMenu.gameObject.SetActive(false);
+        shipMenu.gameObject.SetActive(true);
     }
 
     public void Crew()
     {
-        SceneManager.LoadScene("Crew");
+        crewMenu.gameObject.SetActive(true);
+        shipMenu.gameObject.SetActive(false);
     }
 }

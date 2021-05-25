@@ -9,7 +9,13 @@ public class Basics : MonoBehaviour
     public double numGold;
     public double goldPerSec;
     public Text goldText;
-    public bool doUpdateCrewMenuText;
+    public Text goldPerSecText;
+    public Text multPerSecText;
+
+    public double multPerSec;
+
+    private bool doUpdateCrewMenuText;
+    private bool doUpdateShipText;
 
     // crew arrays
     const int numCrew = 5;
@@ -22,25 +28,37 @@ public class Basics : MonoBehaviour
     };
     public Text[] headerText = new Text[numCrew];
     public Text[] upgradeText = new Text[numCrew];
-    public double gg;
+
+    // ship arrays
+    const int numShip = 1;
+    public Multiplier[] ship = {
+        new Multiplier("Sail",2,0,100),
+    };
+    public Text[] shipHeaderText = new Text[numShip];
+    public Text[] shipUpgradeText = new Text[numShip];
     
     // Start is called before the first frame update
     void Start()
     {
         creatText();
         doUpdateCrewMenuText = true;
+        doUpdateShipText = true;
+        multPerSec = 1;
         Load();
+        InitShipText();
         UpdateCrewText();
+        UpdateShipText();
         InvokeRepeating("Save",5f,5f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        gg = crew[1].m_clickPower;
         // header
-        numGold += goldPerSec;
+        numGold += goldPerSec * Time.deltaTime;
         goldText.text = "Gold: " + DisplayNumber(numGold);
+        goldPerSecText.text = "Gold/Sec: " + DisplayNumber(goldPerSec);
+        multPerSecText.text = "Multiplier: " + multPerSec + "x";
         // crew menu text
         if(doUpdateCrewMenuText)
         {
@@ -48,6 +66,14 @@ public class Basics : MonoBehaviour
             getGoldSec();
             Save();
             doUpdateCrewMenuText = false;
+        }
+        if(doUpdateShipText)
+        {
+            UpdateShipText();
+            getMultSec();
+            getGoldSec();
+            SaveShip();
+            doUpdateShipText = false;
         }
     }
 
@@ -70,8 +96,9 @@ public class Basics : MonoBehaviour
         goldPerSec = 0;
         for(int i = 1; i < numCrew; i++)
         {
-            goldPerSec += crew[i].m_clickPower * Time.deltaTime;
+            goldPerSec += crew[i].m_clickPower;
         }
+        goldPerSec *= multPerSec;
     }
 
     private void UpdateUpgradeText()
@@ -101,13 +128,18 @@ public class Basics : MonoBehaviour
         goldPerSec = double.Parse(PlayerPrefs.GetString("goldPerSec","0"));
 
 
-        // shovel
+        // crew
         foreach(Pirate i in crew)
         {
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
             i.m_clickPower = double.Parse(PlayerPrefs.GetString(i.m_name + ".m_clickPower","0"));
         }
 
+        // ship
+        foreach(Multiplier i in ship)
+        {
+            i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
+        }
     }
 
     public void Save()
@@ -116,12 +148,14 @@ public class Basics : MonoBehaviour
         PlayerPrefs.SetString("goldPerSec", goldPerSec.ToString());
 
 
-        // shovel
+        // crew
         foreach(Pirate i in crew)
         {
             PlayerPrefs.SetInt(i.m_name + ".m_level", i.m_level);
             PlayerPrefs.SetString(i.m_name + ".m_clickPower", i.m_clickPower.ToString("f0"));
         } 
+
+        SaveShip();
 
     }
 
@@ -139,6 +173,48 @@ public class Basics : MonoBehaviour
         {
             headerText[i].text = crew[i].m_headerText;
             upgradeText[i].text = crew[i].m_upgradeText;
+        }
+    }
+
+    // ship
+    private void UpdateShipText()
+    {
+        for(int i = 0; i < numShip; i++)
+        {
+            shipHeaderText[i].text = ship[i].m_headerText;
+            shipUpgradeText[i].text = ship[i].m_upgradeText;
+        }
+    }
+
+    public void UpgradeShip(int i)
+    {
+        numGold -= ship[i].Upgrade(numGold);
+        doUpdateShipText = ship[i].m_didUpdate;
+    }
+
+    public void getMultSec()
+    {
+        multPerSec = 1;
+        for(int i = 0; i < numShip; i++)
+        {
+            multPerSec *= ship[i].m_currentMultiple;
+        }
+        Debug.Log(multPerSec);
+    }
+
+    private void SaveShip()
+    {
+        foreach(Multiplier i in ship)
+        {
+            PlayerPrefs.SetInt(i.m_name + ".m_level", i.m_level);
+        } 
+    }
+
+    private void InitShipText()
+    {
+        foreach(Multiplier i in ship)
+        {
+            i.InitText();
         }
     }
 }
