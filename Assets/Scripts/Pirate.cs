@@ -45,8 +45,7 @@ public class Pirate
             // upgradeBase * (coefficent ^ numOwned)
             m_upgradeCost = m_costBase * Mathf.Pow(m_costCoefficient,m_level);
             m_upgradeCost = Mathf.Round((float)m_upgradeCost);
-            m_headerText = m_name + ": " + m_clickPower + " Gold/Sec\nLevel " + m_level; 
-            m_upgradeText = "Upgrade\nCost:\n" + m_upgradeCost;
+            UpdateText();
         }
         return cost;
     }
@@ -64,9 +63,19 @@ public class Pirate
 
     public void UpdateText()
     {
+        m_headerText = m_name + ": " + m_clickPower + " Gold/Sec\nLevel " + m_level; 
+        m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost);
+        if(m_name == "Shovel")
+            m_headerText = m_name + ": " + m_clickPower + " Gold/Click\nLevel " + m_level;
+    }
+
+    public void InitText()
+    {
+        // cost
         m_upgradeCost = m_costBase * Mathf.Pow(m_costCoefficient,m_level);
         m_upgradeCost = Mathf.Round((float)m_upgradeCost);
-        m_headerText = m_name + ": " + m_clickPower + " Gold/Sec\nLevel " + m_level; 
-        m_upgradeText = "Upgrade\nCost:\n" + m_upgradeCost;
+        // click power
+        m_clickPower = m_level * m_clickBase;
+        UpdateText();
     }
 }

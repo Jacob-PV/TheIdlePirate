@@ -53,6 +53,8 @@ public class Multiplier
     public void InitText()
     {
         m_currentMultiple = m_level * m_multipleInterval;
+        if(m_currentMultiple == 0)
+            m_currentMultiple = 1;
         m_upgradeCost = m_costBase * Mathf.Pow(m_level+1, 2);
         UpdateText();
     }

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Basics : MonoBehaviour
 {
     // define variables
-    public double numGold;
+    public double numGold; 
     public double goldPerSec;
     public Text goldText;
     public Text goldPerSecText;
@@ -14,8 +14,11 @@ public class Basics : MonoBehaviour
 
     public double multPerSec;
 
-    private bool doUpdateCrewMenuText;
+    private bool doUpdateCrewText;
     private bool doUpdateShipText;
+
+    // achievments
+    public int totalCrewUpgrades;
 
     // crew arrays
     const int numCrew = 5;
@@ -37,44 +40,62 @@ public class Basics : MonoBehaviour
     public Text[] shipHeaderText = new Text[numShip];
     public Text[] shipUpgradeText = new Text[numShip];
     
+    
     // Start is called before the first frame update
     void Start()
     {
-        creatText();
-        doUpdateCrewMenuText = true;
+        // frames
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 30;
+
+        totalCrewUpgrades = 0;
+
+        doUpdateCrewText = true;
         doUpdateShipText = true;
         multPerSec = 1;
         Load();
+        
         InitShipText();
-        UpdateCrewText();
-        UpdateShipText();
-        InvokeRepeating("Save",5f,5f);
+        InitCrewText();
+
+        InvokeRepeating("SaveGold",5f,5f);
     }
 
     // Update is called once per frame
     void Update()
     {
+
+
         // header
         numGold += goldPerSec * Time.deltaTime;
         goldText.text = "Gold: " + DisplayNumber(numGold);
-        goldPerSecText.text = "Gold/Sec: " + DisplayNumber(goldPerSec);
-        multPerSecText.text = "Multiplier: " + multPerSec + "x";
-        // crew menu text
-        if(doUpdateCrewMenuText)
-        {
-            UpdateUpgradeText();
-            getGoldSec();
-            Save();
-            doUpdateCrewMenuText = false;
-        }
+        
+        // ship text
         if(doUpdateShipText)
         {
             UpdateShipText();
             getMultSec();
             getGoldSec();
-            SaveShip();
+            SaveShip(); 
             doUpdateShipText = false;
+            UpdateHeaderText();
+            totalCrewUpgrades++;
         }
+        // crew menu text
+        if(doUpdateCrewText)
+        {
+            UpdateUpgradeText();
+            getGoldSec();
+            SaveCrew();
+            doUpdateCrewText = false;
+            UpdateHeaderText();
+        }
+    }
+
+    private void UpdateHeaderText()
+    {
+        goldPerSecText.text = "Gold/Sec: " + DisplayNumber(goldPerSec);
+        multPerSecText.text = "Multiplier: " + multPerSec + "x";
     }
 
     // click image funciton
@@ -87,7 +108,7 @@ public class Basics : MonoBehaviour
     public void Upgrade(int i)
     {
         numGold -= crew[i].Upgrade(numGold);
-        doUpdateCrewMenuText = crew[i].m_didUpdate;
+        doUpdateCrewText = crew[i].m_didUpdate;
     }
 
     // text functions
@@ -108,6 +129,12 @@ public class Basics : MonoBehaviour
             headerText[i].text = crew[i].m_headerText;
             upgradeText[i].text = crew[i].m_upgradeText;
         }
+    }
+
+    private void InitCrewText()
+    {
+        foreach(Pirate i in crew)
+            i.InitText();
     }
 
     // display numbers
@@ -140,13 +167,20 @@ public class Basics : MonoBehaviour
         {
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
         }
+
+        // achievements
+        totalCrewUpgrades = PlayerPrefs.GetInt("totalCrewUpgrades",0);
     }
 
-    public void Save()
+    private void SaveGold()
     {
         PlayerPrefs.SetString("numGold", numGold.ToString("f0"));
-        PlayerPrefs.SetString("goldPerSec", goldPerSec.ToString());
+    }
 
+    public void SaveCrew()
+    {
+        // PlayerPrefs.SetString("numGold", numGold.ToString("f0"));
+        // PlayerPrefs.SetString("goldPerSec", goldPerSec.ToString());
 
         // crew
         foreach(Pirate i in crew)
@@ -155,25 +189,14 @@ public class Basics : MonoBehaviour
             PlayerPrefs.SetString(i.m_name + ".m_clickPower", i.m_clickPower.ToString("f0"));
         } 
 
-        SaveShip();
-
+        // achievments
+        PlayerPrefs.SetInt("totalCrewUpgrades", totalCrewUpgrades);
     }
 
     private void UpdateCrewText()
     {
         foreach(Pirate i in crew)
-        {
             i.UpdateText();
-        }
-    }
-
-    public void creatText()
-    {
-        for(int i = 0; i < numCrew; i++)
-        {
-            headerText[i].text = crew[i].m_headerText;
-            upgradeText[i].text = crew[i].m_upgradeText;
-        }
     }
 
     // ship
@@ -199,7 +222,6 @@ public class Basics : MonoBehaviour
         {
             multPerSec *= ship[i].m_currentMultiple;
         }
-        Debug.Log(multPerSec);
     }
 
     private void SaveShip()
