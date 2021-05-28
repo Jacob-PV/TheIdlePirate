@@ -7,13 +7,13 @@ public class ChangeScene : MonoBehaviour
 {
     public GameObject crewMenu;
     public GameObject shipMenu;
-    public GameObject achievmentMenu;
+    public GameObject achievementMenu;
 
     void Start()
     {
         crewMenu.gameObject.SetActive(true);
         shipMenu.gameObject.SetActive(false);
-        achievmentMenu.gameObject.SetActive(false);
+        achievementMenu.gameObject.SetActive(false);
     }
 
     public void Ship()
@@ -30,9 +30,9 @@ public class ChangeScene : MonoBehaviour
 
     public void Achievments()
     {
-        if(achievmentMenu.gameObject.activeSelf)
-            achievmentMenu.gameObject.SetActive(false);
+        if(achievementMenu.gameObject.activeSelf)
+            achievementMenu.gameObject.SetActive(false);
         else
-            achievmentMenu.gameObject.SetActive(true);
+            achievementMenu.gameObject.SetActive(true);
     }
 }

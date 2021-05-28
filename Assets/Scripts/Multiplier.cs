@@ -37,7 +37,7 @@ public class Multiplier
             m_level++;
             cost = m_upgradeCost;
             m_currentMultiple = m_level * m_multipleInterval;
-            m_upgradeCost = m_costBase * Mathf.Pow(m_level+1, 2);
+            m_upgradeCost = m_costBase * Mathf.Pow(2, m_level);
             UpdateText();
             m_didUpdate = true;
         }
@@ -47,7 +47,7 @@ public class Multiplier
     public void UpdateText()
     {
         m_headerText = m_name + ": " + m_currentMultiple + "x\nLevel " + m_level;
-        m_upgradeText = "Upgrade\nCost:\n" + m_upgradeCost;
+        m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost);
     }
 
     public void InitText()
@@ -57,5 +57,16 @@ public class Multiplier
             m_currentMultiple = 1;
         m_upgradeCost = m_costBase * Mathf.Pow(m_level+1, 2);
         UpdateText();
+    }
+
+    // display numbers
+    private string DisplayNumber(double number, string decimals = "f3")
+    {
+        if(number >= 1000000000)
+            return (number / 1000000000).ToString(decimals) + "B";
+        else if(number >= 1000000)
+            return (number / 1000000).ToString(decimals) + "M";
+        else
+            return number.ToString("f0");
     }
 }
