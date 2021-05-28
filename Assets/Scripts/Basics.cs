@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public partial class Basics : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public partial class Basics : MonoBehaviour
     public int numRubies;
     public Text rubiesText;
     private bool isFirstRun;
+    public double totalGold;
 
     public double multPerSec;
 
@@ -23,6 +25,19 @@ public partial class Basics : MonoBehaviour
     // achievments
     public GameObject achMenu;
     public int totalCrewUpgrades;
+
+    // prestige
+    public GameObject prestigeMenu;
+    private double claimableKeys;
+    public Text prestigeClaimText;
+    public Button prestigeButton;
+    private double keys;
+
+    // idle
+    DateTime currentTime;
+    DateTime oldTime;
+    TimeSpan timeAway;
+    int secTimeAway;
 
     // Start is called before the first frame update
     void Start()
@@ -34,12 +49,27 @@ public partial class Basics : MonoBehaviour
         isFirstRun = true;
         totalCrewUpgrades = 0;
         numRubies = 0;
+        claimableKeys = 0;
 
         doUpdateCrewText = true;
         doUpdateShipText = true;
         multPerSec = 1;
-        Load();
         
+
+        //idle
+        currentTime = DateTime.Now;
+        // Load();
+        oldTime = currentTime;
+        currentTime = DateTime.Now;
+        if(oldTime != currentTime)
+        {
+            timeAway = currentTime - oldTime;
+            secTimeAway = timeAway.Days * 86400 + timeAway.Hours * 3600 + timeAway.Minutes * 60 + timeAway.Seconds;
+            numGold += goldPerSec * secTimeAway;
+            Debug.Log(timeAway);
+            Debug.Log(goldPerSec);
+        }
+
         InitShipText();
         InitCrewText();
 
@@ -52,8 +82,13 @@ public partial class Basics : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // save
+        if(isFirstRun)
+            SaveAll();
+
         // header
         numGold += goldPerSec * Time.deltaTime;
+        totalGold += goldPerSec * Time.deltaTime;
         goldText.text = "Gold: " + DisplayNumber(numGold);
         
         // ship text
@@ -85,6 +120,17 @@ public partial class Basics : MonoBehaviour
             rubiesText.text = "Rubies: " + numRubies;
             isFirstRun = false;
         }
+        
+        // prestige
+        if(prestigeMenu.gameObject.activeSelf || isFirstRun)
+        {
+            claimableKeys = Math.Floor(totalGold / 1000000);
+            prestigeClaimText.text = claimableKeys + " Skelaton Keys\nClaim";
+            if(claimableKeys>=0)
+                prestigeButton.interactable = true;
+            else
+                prestigeButton.interactable = false;
+        }
     }
 
     // text functions
@@ -96,6 +142,7 @@ public partial class Basics : MonoBehaviour
             goldPerSec += crew[i].m_clickPower;
         }
         goldPerSec *= multPerSec;
+        goldPerSec *= keys*0.5 + 1;
     }
 
     // display numbers
@@ -114,6 +161,8 @@ public partial class Basics : MonoBehaviour
     {
         numGold = double.Parse(PlayerPrefs.GetString("numGold","0"));
         goldPerSec = double.Parse(PlayerPrefs.GetString("goldPerSec","0"));
+        currentTime = DateTime.Parse(PlayerPrefs.GetString("currentTime", DateTime.Now.ToString()));
+        totalGold = double.Parse(PlayerPrefs.GetString("totalGold"));
 
         // crew
         foreach(Pirate i in crew)
@@ -140,7 +189,32 @@ public partial class Basics : MonoBehaviour
     private void SaveGold()
     {
         PlayerPrefs.SetString("numGold", numGold.ToString("f0"));
+        PlayerPrefs.SetString("currentTime", currentTime.ToString());
+        PlayerPrefs.SetString("goldPerSec", goldPerSec.ToString());
+        PlayerPrefs.SetString("totalGold", totalGold.ToString());
     }
+
+    private void SaveAll()
+    {
+        SaveGold();
+        SaveCrew();
+        SaveShip();
+        SaveAch();
+    }
+
+    
+    public void Prestige()
+    {
+        keys += claimableKeys;
+        claimableKeys = 0;
+        numGold = 0;
+        
+    }
+
+    // private IdleIncome()
+    // {
+
+    // }
 
     // crashes apparently
     // float elapsed = 0f;
@@ -159,16 +233,20 @@ public partial class Basics : MonoBehaviour
     //     Debug.Log(Input.GetMouseButtonDown(0));
     //     Upgrade(i);
     // }
-    // public void HoldUpgrade(int i)
-    // {
-    //     float elpased = 0f;
-    //     while(true)
-    //     {
-    //         elpased += Time.deltaTime;
-    //         Debug.Log(elpased);
-    //         if(Input.GetMouseButtonUp(0))
-    //             break;
-    //     }
-    //     Debug.Log("out");
-    // }
+    public void HoldUpgrade(int i)
+    {
+        float elpased = 0f;
+        bool exit = false;
+        while(!exit)
+        {
+            Debug.Log(Input.GetMouseButton(0));
+            elpased += Time.deltaTime;
+            Debug.Log(elpased);
+            if(!Input.GetMouseButton(0))
+                exit = true;
+            if(elpased > 300f)
+                exit = true;
+        }
+        Debug.Log("out");
+    }
 }

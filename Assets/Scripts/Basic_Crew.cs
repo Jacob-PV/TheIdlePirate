@@ -45,6 +45,7 @@ public partial class Basics : MonoBehaviour
     public void ShovelClick()
     {
         numGold += crew[0].m_clickPower;
+        totalGold += crew[0].m_clickPower;
     }
 
     // upgrade funcitons

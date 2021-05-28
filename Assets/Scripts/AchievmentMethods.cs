@@ -9,15 +9,16 @@ public partial class Basics : MonoBehaviour
     // VARS
     bool doUpdateAchText = true;
 
-    const int numAchievements = 1;
+    const int numAchievements = 2;
     public Achievement[] achievements = {
         new Achievement("Crew Upgrades", new double[] {10,50,100},new int[] {5,10,20}),
+        new Achievement("Total Gold", new double[] {1000,10000,100000,1000000}, new int[] {5, 10, 20, 40}),
     };
     public Text[] achievmentsHeader = new Text[numAchievements];
     public Text[] achievmentsClaim = new Text[numAchievements];
     public Button[] claimButton = new Button[numAchievements];
 
-    private int[] current = new int[numAchievements];
+    private double[] current = new double[numAchievements];
 
     // METHODS
     public void UpdateAchievementsText()
@@ -32,6 +33,7 @@ public partial class Basics : MonoBehaviour
 
         // update external text
         current[0] = totalCrewUpgrades;
+        current[1] = totalGold;
         for(int i = 0; i < numAchievements; i++)
         {
             // text
