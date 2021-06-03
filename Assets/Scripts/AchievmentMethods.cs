@@ -37,10 +37,13 @@ public partial class Basics : MonoBehaviour
         for(int i = 0; i < numAchievements; i++)
         {
             // text
-            achievmentsHeader[i].text = achievements[i].m_headerText + current[i] + "/" + achievements[i].m_tiers[achievements[i].m_level-1];
+            if(!achievements[i].m_maxed)
+                achievmentsHeader[i].text = achievements[i].m_headerText + DisplayNumber(current[i]) + "/" + DisplayNumber(achievements[i].m_tiers[achievements[i].m_level-1]);
+            else
+                achievmentsHeader[i].text = achievements[i].m_headerText + DisplayNumber(current[i]);
             achievmentsClaim[i].text = achievements[i].m_rewardText;
             // button
-            if(current[i] >= achievements[i].m_tiers[achievements[i].m_level-1])
+            if(!achievements[i].m_maxed && current[i] >= achievements[i].m_tiers[achievements[i].m_level-1])
                 claimButton[i].interactable = true;
             else
                 claimButton[i].interactable = false;
@@ -53,7 +56,7 @@ public partial class Basics : MonoBehaviour
         {
             numRubies += achievements[i].m_rewardTiers[achievements[i].m_level-1];
             achievements[i].m_level++;
-            doUpdateAchText = true;
+            achievements[i].UpdateText();
             SaveAch();
         }
     }

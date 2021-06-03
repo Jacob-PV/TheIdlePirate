@@ -32,12 +32,28 @@ public partial class Basics : MonoBehaviour
     public Text prestigeClaimText;
     public Button prestigeButton;
     private double keys;
+    private bool didPrestige;
+    public Text currentKeysText;
+
+    // hold
+    bool isDown = false;
+    int holdInt = 0;
+    float holdStart;
+    float holdCurrent;
+    float holdElapsed;
 
     // idle
     DateTime currentTime;
     DateTime oldTime;
     TimeSpan timeAway;
     int secTimeAway;
+    public Text idelIncome;
+    private double idleGold;
+    public GameObject idleMenu;
+
+    // breakdown
+    public Text breakdownText;
+    public GameObject breakdownMenu;
 
     // Start is called before the first frame update
     void Start()
@@ -50,9 +66,11 @@ public partial class Basics : MonoBehaviour
         totalCrewUpgrades = 0;
         numRubies = 0;
         claimableKeys = 0;
+        didPrestige = false;
 
         doUpdateCrewText = true;
         doUpdateShipText = true;
+        doUpdatePermText = true;
         multPerSec = 1;
         
 
@@ -61,14 +79,21 @@ public partial class Basics : MonoBehaviour
         // Load();
         oldTime = currentTime;
         currentTime = DateTime.Now;
-        if(oldTime != currentTime)
+        timeAway = currentTime - oldTime;
+        secTimeAway = timeAway.Days * 86400 + timeAway.Hours * 3600 + timeAway.Minutes * 60 + timeAway.Seconds;
+        idleGold = goldPerSec * secTimeAway;
+        if(idleGold > 0)
         {
-            timeAway = currentTime - oldTime;
-            secTimeAway = timeAway.Days * 86400 + timeAway.Hours * 3600 + timeAway.Minutes * 60 + timeAway.Seconds;
-            numGold += goldPerSec * secTimeAway;
+            numGold += idleGold;
+            totalGold += idleGold;
             Debug.Log(timeAway);
             Debug.Log(goldPerSec);
+
+            idelIncome.text = "You earned " + DisplayNumber(idleGold) + " Gold while you were away!";
+            idleMenu.gameObject.SetActive(true);
         }
+        else
+            idleMenu.gameObject.SetActive(false); // test
 
         InitShipText();
         InitCrewText();
@@ -101,6 +126,16 @@ public partial class Basics : MonoBehaviour
             doUpdateShipText = false;
             UpdateHeaderText();
         }
+        // perm text
+        if(doUpdatePermText)
+        {
+            UpdatePermText();
+            getpermMultSec();
+            getGoldSec();
+            SavePerm();
+            UpdateHeaderText();
+            doUpdatePermText = false;
+        }
         // crew menu text
         if(doUpdateCrewText)
         {
@@ -126,10 +161,32 @@ public partial class Basics : MonoBehaviour
         {
             claimableKeys = Math.Floor(totalGold / 1000000);
             prestigeClaimText.text = claimableKeys + " Skelaton Keys\nClaim";
-            if(claimableKeys>=0)
+            if(claimableKeys>0)
                 prestigeButton.interactable = true;
             else
                 prestigeButton.interactable = false;
+            currentKeysText.text = "Current Skeleton Keys: " + keys;
+        }
+
+        // breakdown
+        if(breakdownMenu.gameObject.activeSelf || isFirstRun)
+        {
+            breakdownText.text = "Gold/Click: " + crew[0].m_clickPower
+                + "\nShip Multipliers: " + multPerSec + "x"
+                + "\nPermanent Multipliers: " + " 1x"
+                + "\nSkelaton Keys: " + (keys * 0.5 + 1) + "x";
+        }
+
+        // hold upgrade
+        if(isDown)
+        {
+            holdCurrent = Time.time;
+            holdElapsed = holdCurrent - holdStart;
+            if(holdElapsed > .2f)
+            {
+                Upgrade(holdInt);
+                holdStart = Time.time;
+            }
         }
     }
 
@@ -148,12 +205,20 @@ public partial class Basics : MonoBehaviour
     // display numbers
     private string DisplayNumber(double number, string decimals = "f3")
     {
-        if(number >= 1000000000)
+        if(number >= 1000000000000)
+            return (number / 1000000000000).ToString(decimals) + "T";
+        else if(number >= 1000000000)
             return (number / 1000000000).ToString(decimals) + "B";
         else if(number >= 1000000)
             return (number / 1000000).ToString(decimals) + "M";
         else
             return number.ToString("f0");
+
+        // string[] suffix = new string[] {"M", "B", "T"};
+        // for(int i = 6; i <= suffix.Length+6; i++)
+        // {
+
+        // }
     }
 
     // load and save
@@ -192,6 +257,14 @@ public partial class Basics : MonoBehaviour
         PlayerPrefs.SetString("currentTime", currentTime.ToString());
         PlayerPrefs.SetString("goldPerSec", goldPerSec.ToString());
         PlayerPrefs.SetString("totalGold", totalGold.ToString());
+
+        if(didPrestige)
+        {
+            PlayerPrefs.SetString("numGold", "0");
+            PlayerPrefs.SetString("currentTime", currentTime.ToString());
+            PlayerPrefs.SetString("goldPerSec", "0");
+            PlayerPrefs.SetString("totalGold", totalGold.ToString());
+        }
     }
 
     private void SaveAll()
@@ -202,51 +275,17 @@ public partial class Basics : MonoBehaviour
         SaveAch();
     }
 
-    
-    public void Prestige()
-    {
-        keys += claimableKeys;
-        claimableKeys = 0;
-        numGold = 0;
-        
+    public void ButtonDown(int i)
+    {   
+        isDown = true;
+        holdInt = i;
+        holdStart = Time.time;
+        Upgrade(holdInt);
     }
 
-    // private IdleIncome()
-    // {
-
-    // }
-
-    // crashes apparently
-    // float elapsed = 0f;
-    // public void HoldUpgrade(int i)
-    // {
-    //     while(Input.GetMouseButtonDown(0))
-    //     {
-    //         elapsed += Time.deltaTime;
-    //         if(elapsed >= 0.2f)
-    //         {
-    //             elapsed = 0f;
-    //             Upgrade(i);
-    //         }
-    //         Debug.Log(Input.GetMouseButtonDown(0));
-    //     }
-    //     Debug.Log(Input.GetMouseButtonDown(0));
-    //     Upgrade(i);
-    // }
-    public void HoldUpgrade(int i)
+    public void ButtonUp()
     {
-        float elpased = 0f;
-        bool exit = false;
-        while(!exit)
-        {
-            Debug.Log(Input.GetMouseButton(0));
-            elpased += Time.deltaTime;
-            Debug.Log(elpased);
-            if(!Input.GetMouseButton(0))
-                exit = true;
-            if(elpased > 300f)
-                exit = true;
-        }
-        Debug.Log("out");
+        isDown = false;
     }
+
 }

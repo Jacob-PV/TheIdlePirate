@@ -12,6 +12,7 @@ public class Achievement
     public int[] m_rewardTiers;
     public string m_headerText;
     public string m_rewardText;
+    public bool m_maxed;
 
     public Achievement(string name, double[] tiers, int[] rewardTiers, int level = 1)
     {
@@ -24,7 +25,16 @@ public class Achievement
 
     public void UpdateText()
     {
-        m_headerText = "Level: " + m_level + "/" + m_tiers.Length + "\n" + m_name + " ";
-        m_rewardText = m_rewardTiers[m_level-1].ToString() + " Rubies\nClaim";
+        m_maxed = (m_level > m_tiers.Length)?true:false;
+        if(!m_maxed)
+        {
+            m_headerText = "Level: " + m_level + "/" + m_tiers.Length + "\n" + m_name + " ";
+            m_rewardText = m_rewardTiers[m_level-1].ToString() + " Rubies\nClaim";
+        }
+        else
+        {
+            m_headerText = "Level: MAXED\n" + m_name + " ";
+            m_rewardText = "MAXED";
+        }
     }
 }

@@ -7,26 +7,40 @@ public class ChangeScene : MonoBehaviour
 {
     public GameObject crewMenu;
     public GameObject shipMenu;
+    public GameObject permMenu;
     public GameObject achievementMenu;
     public GameObject prestigeMenu;
+    public GameObject idleMenu;
+    public GameObject breakdownMenu;
 
     void Start()
     {
         crewMenu.gameObject.SetActive(true);
         shipMenu.gameObject.SetActive(false);
+        permMenu.gameObject.SetActive(false);
         achievementMenu.gameObject.SetActive(false);
         prestigeMenu.gameObject.SetActive(false);
+        breakdownMenu.gameObject.SetActive(false);
     }
 
     public void Ship()
     {
         crewMenu.gameObject.SetActive(false);
         shipMenu.gameObject.SetActive(true);
+        permMenu.gameObject.SetActive(false);
     }
 
     public void Crew()
     {
         crewMenu.gameObject.SetActive(true);
+        shipMenu.gameObject.SetActive(false);
+        permMenu.gameObject.SetActive(false);
+    }
+
+    public void Perm()
+    {
+        permMenu.gameObject.SetActive(true);
+        crewMenu.gameObject.SetActive(false);
         shipMenu.gameObject.SetActive(false);
     }
 
@@ -38,6 +52,7 @@ public class ChangeScene : MonoBehaviour
         {
             achievementMenu.gameObject.SetActive(true);
             prestigeMenu.gameObject.SetActive(false);
+            breakdownMenu.gameObject.SetActive(false);
         }
     }
 
@@ -49,6 +64,24 @@ public class ChangeScene : MonoBehaviour
         {
             prestigeMenu.gameObject.SetActive(true);
             achievementMenu.gameObject.SetActive(false);
+            breakdownMenu.gameObject.SetActive(false);
         }
+    }
+
+    public void Breakdown()
+    {
+        if(breakdownMenu.gameObject.activeSelf)
+            breakdownMenu.gameObject.SetActive(false);
+        else
+        {
+            breakdownMenu.gameObject.SetActive(true);
+            achievementMenu.gameObject.SetActive(false);
+            prestigeMenu.gameObject.SetActive(false);
+        }
+    }
+
+    public void LeaveIdle()
+    {
+        idleMenu.gameObject.SetActive(false);
     }
 }

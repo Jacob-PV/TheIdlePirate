@@ -48,11 +48,17 @@ public partial class Basics : MonoBehaviour
         }
     }
 
-    private void SaveShip()
+    private void SaveShip(bool prestige = false)
     {
         foreach(Multiplier i in ship)
         {
             PlayerPrefs.SetInt(i.m_name + ".m_level", i.m_level);
         } 
+
+        if(prestige)
+        {
+            foreach(Multiplier i in ship)
+                PlayerPrefs.SetInt(i.m_name + ".m_level", 0);
+        }
     }
 }

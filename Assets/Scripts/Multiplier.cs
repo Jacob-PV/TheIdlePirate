@@ -13,8 +13,9 @@ public class Multiplier
     public double m_upgradeCost;
     public double m_costBase;
     public bool m_didUpdate;
+    private bool m_isRuby;
 
-    public Multiplier(string name, double multiple, int level, double costBase)
+    public Multiplier(string name, double multiple, int level, double costBase, bool ruby = false)
     {
         m_name = name;
         m_multipleInterval = multiple;
@@ -24,20 +25,37 @@ public class Multiplier
         m_currentMultiple = m_level * m_multipleInterval;
         UpdateText();
         m_didUpdate = true;
+        m_isRuby = ruby;
     }
 
     ~Multiplier(){}
 
-    public double Upgrade(double numGold)
+    public double Upgrade(double numCoin)
     {
         double cost = 0;
         m_didUpdate = false;
-        if(numGold >= m_upgradeCost)
+
+        // gold
+        if(!m_isRuby && numCoin >= m_upgradeCost)
         {
             m_level++;
             cost = m_upgradeCost;
             m_currentMultiple = m_level * m_multipleInterval;
-            m_upgradeCost = m_costBase * Mathf.Pow(2, m_level);
+            if(!m_isRuby)
+                m_upgradeCost = m_costBase * Mathf.Pow(2, m_level);
+            else  
+                m_upgradeCost = m_costBase * Mathf.Pow(1.15f, m_level); 
+            UpdateText();
+            m_didUpdate = true;
+        }
+
+        // ruby
+        if(m_isRuby && numCoin >= m_upgradeCost)
+        {
+            m_level++;
+            cost = m_upgradeCost;
+            m_currentMultiple = m_level * m_multipleInterval;
+            m_upgradeCost = m_costBase * Mathf.Pow(1.15f, m_level); 
             UpdateText();
             m_didUpdate = true;
         }
@@ -47,7 +65,10 @@ public class Multiplier
     public void UpdateText()
     {
         m_headerText = m_name + ": " + m_currentMultiple + "x\nLevel " + m_level;
-        m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost);
+        if(!m_isRuby)
+            m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost);
+        else
+            m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost) + "R";
     }
 
     public void InitText()
@@ -55,7 +76,10 @@ public class Multiplier
         m_currentMultiple = m_level * m_multipleInterval;
         if(m_currentMultiple == 0)
             m_currentMultiple = 1;
-        m_upgradeCost = m_costBase * Mathf.Pow(2, m_level);
+        if(!m_isRuby)
+            m_upgradeCost = m_costBase * Mathf.Pow(2, m_level);
+        else  
+            m_upgradeCost = m_costBase * Mathf.Pow(1.15f, m_level); 
         UpdateText();
     }
 

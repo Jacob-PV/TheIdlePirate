@@ -53,7 +53,9 @@ public class Pirate
     // display numbers
     private string DisplayNumber(double number, string decimals = "f3")
     {
-        if(number >= 1000000000)
+        if(number >= 1000000000000)
+            return (number / 1000000000000).ToString(decimals) + "T";
+        else if(number >= 1000000000)
             return (number / 1000000000).ToString(decimals) + "B";
         else if(number >= 1000000)
             return (number / 1000000).ToString(decimals) + "M";
