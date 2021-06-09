@@ -24,8 +24,7 @@ public class Pirate
         m_costBase = costBase;
         m_clickBase = clickBase;
         m_costCoefficient = costCoefficient;
-        m_headerText = m_name + ": " + m_clickPower + " Gold/Sec\nLevel " + m_level; 
-        m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost);
+        UpdateText();
         m_didUpdate = true;
     }
 
@@ -65,10 +64,10 @@ public class Pirate
 
     public void UpdateText()
     {
-        m_headerText = m_name + ": " + m_clickPower + " Gold/Sec\nLevel " + m_level; 
+        m_headerText = m_name + "\n" + m_clickPower + " Gold/Sec\nLevel " + m_level; 
         m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost);
         if(m_name == "Shovel")
-            m_headerText = m_name + ": " + m_clickPower + " Gold/Click\nLevel " + m_level;
+            m_headerText = m_name + "\n" + m_clickPower + " Gold/Click\nLevel " + m_level;
     }
 
     public void InitText()

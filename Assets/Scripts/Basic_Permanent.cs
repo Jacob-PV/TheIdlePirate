@@ -16,6 +16,7 @@ public partial class Basics : MonoBehaviour
 
     public Text[] permHeaderText = new Text[numPerm];
     public Text[] permUpgradeText = new Text[numPerm];
+    public Button[] permUpgradeButton = new Button[numShip];
 
     // METHODS
     private void InitPermText()
@@ -37,7 +38,7 @@ public partial class Basics : MonoBehaviour
 
     public void UpgradePerm(int i)
     {
-        numGold -= perm[i].Upgrade(numRubies);
+        numRubies -= (int)perm[i].Upgrade(numRubies);
         doUpdatePermText = perm[i].m_didUpdate;
     }
 
@@ -56,5 +57,18 @@ public partial class Basics : MonoBehaviour
         {
             PlayerPrefs.SetInt(i.m_name + ".m_level", i.m_level);
         } 
+        PlayerPrefs.SetString("permMultPerSec", permMultPerSec.ToString());
+    }
+
+    // button
+    private void permColorButton()
+    {
+        for(int i = 0; i < numPerm; i++)
+        {
+            if(perm[i].m_upgradeCost <= numRubies)
+                permUpgradeButton[i].interactable = true;
+            else
+                permUpgradeButton[i].interactable = false;
+        }
     }
 }

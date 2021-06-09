@@ -14,6 +14,7 @@ public partial class Basics : MonoBehaviour
 
     public Text[] shipHeaderText = new Text[numShip];
     public Text[] shipUpgradeText = new Text[numShip];
+    public Button[] shipUpgradeButton = new Button[numShip];
 
     // METHODS
     private void InitShipText()
@@ -59,6 +60,18 @@ public partial class Basics : MonoBehaviour
         {
             foreach(Multiplier i in ship)
                 PlayerPrefs.SetInt(i.m_name + ".m_level", 0);
+        }
+    }
+
+    // button
+    private void shipButtonColor()
+    {
+        for(int i = 0; i < numShip; i++)
+        {
+            if(ship[i].m_upgradeCost <= numGold)
+                shipUpgradeButton[i].interactable = true;
+            else
+                shipUpgradeButton[i].interactable = false;
         }
     }
 }

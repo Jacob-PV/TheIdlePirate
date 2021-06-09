@@ -37,6 +37,7 @@ public partial class Basics : MonoBehaviour
 
     // hold
     bool isDown = false;
+    bool isDownShip = false;
     int holdInt = 0;
     float holdStart;
     float holdCurrent;
@@ -54,6 +55,9 @@ public partial class Basics : MonoBehaviour
     // breakdown
     public Text breakdownText;
     public GameObject breakdownMenu;
+
+    // sound
+    public AudioSource clickSound;
 
     // Start is called before the first frame update
     void Start()
@@ -97,6 +101,7 @@ public partial class Basics : MonoBehaviour
 
         InitShipText();
         InitCrewText();
+        InitPermText();
 
         InvokeRepeating("SaveGold",5f,5f);
 
@@ -147,6 +152,12 @@ public partial class Basics : MonoBehaviour
             if(!isFirstRun)
                 totalCrewUpgrades++;
         }
+
+        // color
+        colorButton();
+        permColorButton();
+        shipButtonColor();
+
         // ach menu text
         if(achMenu.gameObject.activeSelf || isFirstRun)
         {
@@ -173,7 +184,7 @@ public partial class Basics : MonoBehaviour
         {
             breakdownText.text = "Gold/Click: " + crew[0].m_clickPower
                 + "\nShip Multipliers: " + multPerSec + "x"
-                + "\nPermanent Multipliers: " + " 1x"
+                + "\nPermanent Multipliers: " + permMultPerSec + "x"
                 + "\nSkelaton Keys: " + (keys * 0.5 + 1) + "x";
         }
 
@@ -188,17 +199,31 @@ public partial class Basics : MonoBehaviour
                 holdStart = Time.time;
             }
         }
+
+        if(isDownShip)
+        {
+            holdCurrent = Time.time;
+            holdElapsed = holdCurrent - holdStart;
+            if(holdElapsed > .2f)
+            {
+                UpgradeShip(holdInt);
+                holdStart = Time.time;
+            }
+        }
     }
 
     // text functions
     private void getGoldSec()
     {
+        getpermMultSec();
+        getMultSec();
         goldPerSec = 0;
         for(int i = 1; i < numCrew; i++)
         {
             goldPerSec += crew[i].m_clickPower;
         }
         goldPerSec *= multPerSec;
+        goldPerSec *= permMultPerSec;
         goldPerSec *= keys*0.5 + 1;
     }
 
@@ -249,6 +274,11 @@ public partial class Basics : MonoBehaviour
         {
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
         }
+
+        // perm
+        foreach(Multiplier i in perm)
+            i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
+        permMultPerSec = double.Parse(PlayerPrefs.GetString("permMultPerSec", "0"));
     }
 
     private void SaveGold()
@@ -286,6 +316,19 @@ public partial class Basics : MonoBehaviour
     public void ButtonUp()
     {
         isDown = false;
+    }
+
+    public void ShipButtonDown(int i)
+    {   
+        isDownShip = true;
+        holdInt = i;
+        holdStart = Time.time;
+        UpgradeShip(holdInt);
+    }
+
+    public void ShipButtonUp()
+    {
+        isDownShip = false;
     }
 
 }

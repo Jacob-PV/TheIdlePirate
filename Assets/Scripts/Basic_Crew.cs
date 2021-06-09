@@ -24,6 +24,7 @@ public partial class Basics : MonoBehaviour
 
     public Text[] headerText = new Text[numCrew];
     public Text[] upgradeText = new Text[numCrew];
+    public Button[] upgradeButton = new Button[numCrew];
 
     // METHODS
     private void InitCrewText()
@@ -59,6 +60,8 @@ public partial class Basics : MonoBehaviour
     {
         numGold -= crew[i].Upgrade(numGold);
         doUpdateCrewText = crew[i].m_didUpdate;
+        if(doUpdateCrewText)
+            clickSound.Play();
     }
 
     private void UpdateCrewText()
@@ -84,6 +87,18 @@ public partial class Basics : MonoBehaviour
             foreach(Pirate i in crew)
                 PlayerPrefs.SetInt(i.m_name + ".m_level", 0);
             PlayerPrefs.SetInt("Shovel.m_level", 1);
+        }
+    }
+
+    // button
+    private void colorButton()
+    {
+        for(int i = 0; i < numCrew; i++)
+        {
+            if(crew[i].m_upgradeCost <= numGold)
+                upgradeButton[i].interactable = true;
+            else
+                upgradeButton[i].interactable = false;
         }
     }
 }

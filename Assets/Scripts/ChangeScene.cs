@@ -10,6 +10,7 @@ public class ChangeScene : MonoBehaviour
     public GameObject permMenu;
     public GameObject achievementMenu;
     public GameObject prestigeMenu;
+    public GameObject settingsMenu;
     public GameObject idleMenu;
     public GameObject breakdownMenu;
 
@@ -65,6 +66,16 @@ public class ChangeScene : MonoBehaviour
             prestigeMenu.gameObject.SetActive(true);
             achievementMenu.gameObject.SetActive(false);
             breakdownMenu.gameObject.SetActive(false);
+        }
+    }
+
+    public void Settings()
+    {
+        if(settingsMenu.gameObject.activeSelf)
+            settingsMenu.gameObject.SetActive(false);
+        else
+        {
+            settingsMenu.gameObject.SetActive(true);
         }
     }
 
