@@ -40,6 +40,8 @@ public partial class Basics : MonoBehaviour
     {
         numRubies -= (int)perm[i].Upgrade(numRubies);
         doUpdatePermText = perm[i].m_didUpdate;
+        if(doUpdatePermText)
+            clickSound.Play();
     }
 
     public void getpermMultSec()

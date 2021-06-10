@@ -58,10 +58,14 @@ public partial class Basics : MonoBehaviour
 
     // sound
     public AudioSource clickSound;
+    public AudioSource music;
+    public GameObject musicOn;
+    private bool playMusic;
 
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log(DisplayNumber(123456789));
         // frames
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 30;
@@ -71,6 +75,8 @@ public partial class Basics : MonoBehaviour
         numRubies = 0;
         claimableKeys = 0;
         didPrestige = false;
+        // sound
+        playMusic = true;
 
         doUpdateCrewText = true;
         doUpdateShipText = true;
@@ -230,20 +236,27 @@ public partial class Basics : MonoBehaviour
     // display numbers
     private string DisplayNumber(double number, string decimals = "f3")
     {
-        if(number >= 1000000000000)
-            return (number / 1000000000000).ToString(decimals) + "T";
-        else if(number >= 1000000000)
-            return (number / 1000000000).ToString(decimals) + "B";
-        else if(number >= 1000000)
-            return (number / 1000000).ToString(decimals) + "M";
-        else
-            return number.ToString("f0");
+        // if(number >= 1000000000000)
+        //     return (number / 1000000000000).ToString(decimals) + "T";
+        // else if(number >= 1000000000)
+        //     return (number / 1000000000).ToString(decimals) + "B";
+        // else if(number >= 1000000)
+        //     return (number / 1000000).ToString(decimals) + "M";
+        // else
+        //     return number.ToString("f0");
 
-        // string[] suffix = new string[] {"M", "B", "T"};
-        // for(int i = 6; i <= suffix.Length+6; i++)
-        // {
-
-        // }
+        string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
+            "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
+        int suffixIndex = 0;
+        for(int i = 6; i <= suffix.Length+6; i=i+3)
+        {
+            if(number/Math.Pow(10,i)<1000 && number/Math.Pow(10,i)>=1)
+            {
+                return (number / Math.Pow(10,i)).ToString(decimals) + suffix[suffixIndex];
+            }
+            suffixIndex++;
+        }
+        return number.ToString("f0");
     }
 
     // load and save
@@ -329,6 +342,27 @@ public partial class Basics : MonoBehaviour
     public void ShipButtonUp()
     {
         isDownShip = false;
+    }
+
+    public void MusicController()
+    {
+        if(playMusic)
+        {
+            playMusic = false;
+            musicOn.gameObject.SetActive(false);
+            music.Pause();
+        }
+        else
+        {
+            playMusic = true;
+            musicOn.gameObject.SetActive(true);
+            music.Play();
+        }
+    }
+
+    public void ClickSound()
+    {
+        clickSound.Play();
     }
 
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Pirate
 {
@@ -52,14 +53,18 @@ public class Pirate
     // display numbers
     private string DisplayNumber(double number, string decimals = "f3")
     {
-        if(number >= 1000000000000)
-            return (number / 1000000000000).ToString(decimals) + "T";
-        else if(number >= 1000000000)
-            return (number / 1000000000).ToString(decimals) + "B";
-        else if(number >= 1000000)
-            return (number / 1000000).ToString(decimals) + "M";
-        else
-            return number.ToString("f0");
+        string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
+            "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
+        int suffixIndex = 0;
+        for(int i = 6; i <= suffix.Length+6; i=i+3)
+        {
+            if(number/Math.Pow(10,i)<1000 && number/Math.Pow(10,i)>=1)
+            {
+                return (number / Math.Pow(10,i)).ToString(decimals) + suffix[suffixIndex];
+            }
+            suffixIndex++;
+        }
+        return number.ToString("f0");
     }
 
     public void UpdateText()

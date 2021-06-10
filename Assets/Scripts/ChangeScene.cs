@@ -21,6 +21,7 @@ public class ChangeScene : MonoBehaviour
         permMenu.gameObject.SetActive(false);
         achievementMenu.gameObject.SetActive(false);
         prestigeMenu.gameObject.SetActive(false);
+        settingsMenu.gameObject.SetActive(false);
         breakdownMenu.gameObject.SetActive(false);
     }
 
