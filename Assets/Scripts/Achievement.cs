@@ -28,7 +28,7 @@ public class Achievement
         m_maxed = (m_level > m_tiers.Length)?true:false;
         if(!m_maxed)
         {
-            m_headerText = "Level: " + m_level + "/" + m_tiers.Length + "\n" + m_name + " ";
+            m_headerText = "Level: " + m_level + "/" + m_tiers.Length + "\n" + m_name + "\n";
             m_rewardText = m_rewardTiers[m_level-1].ToString() + " Rubies\nClaim";
         }
         else

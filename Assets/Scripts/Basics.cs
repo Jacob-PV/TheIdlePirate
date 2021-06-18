@@ -25,6 +25,7 @@ public partial class Basics : MonoBehaviour
     // achievments
     public GameObject achMenu;
     public int totalCrewUpgrades;
+    private int totalShovelClicks;
 
     // prestige
     public GameObject prestigeMenu;
@@ -38,6 +39,7 @@ public partial class Basics : MonoBehaviour
     // hold
     bool isDown = false;
     bool isDownShip = false;
+    bool isDownPerm = false;
     int holdInt = 0;
     float holdStart;
     float holdCurrent;
@@ -59,24 +61,35 @@ public partial class Basics : MonoBehaviour
     // sound
     public AudioSource clickSound;
     public AudioSource music;
-    public GameObject musicOn;
-    private bool playMusic;
+    public GameObject musicOnObject;
+    private bool musicOn;
+    public bool sfxOn;
+    public GameObject sfxButtonOn;
+
+    // alert
+    public GameObject crewAlert;
+    public GameObject shipAlert;
+    public GameObject permAlert;
+    public GameObject achAlert;
+    public GameObject prestigeAlert;
+    public GameObject prestigeAlert2;
 
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(DisplayNumber(123456789));
         // frames
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 30;
 
         isFirstRun = true;
         totalCrewUpgrades = 0;
+        totalShovelClicks = 0;
         numRubies = 0;
         claimableKeys = 0;
         didPrestige = false;
         // sound
-        playMusic = true;
+        musicOn = true;
+        sfxOn = true;
 
         doUpdateCrewText = true;
         doUpdateShipText = true;
@@ -108,6 +121,9 @@ public partial class Basics : MonoBehaviour
         InitShipText();
         InitCrewText();
         InitPermText();
+        InitAchText();
+
+        InitSound();
 
         InvokeRepeating("SaveGold",5f,5f);
 
@@ -121,6 +137,8 @@ public partial class Basics : MonoBehaviour
         // save
         if(isFirstRun)
             SaveAll();
+
+        CheckAlerts();
 
         // header
         numGold += goldPerSec * Time.deltaTime;
@@ -145,6 +163,7 @@ public partial class Basics : MonoBehaviour
             getGoldSec();
             SavePerm();
             UpdateHeaderText();
+            rubiesText.text = "Rubies: " + numRubies;
             doUpdatePermText = false;
         }
         // crew menu text
@@ -176,7 +195,8 @@ public partial class Basics : MonoBehaviour
         // prestige
         if(prestigeMenu.gameObject.activeSelf || isFirstRun)
         {
-            claimableKeys = Math.Floor(totalGold / 1000000);
+            // ^15 ref
+            claimableKeys = Math.Floor(150 * Math.Pow((totalGold/Math.Pow(10,13)),.5) - keys);
             prestigeClaimText.text = claimableKeys + " Skelaton Keys\nClaim";
             if(claimableKeys>0)
                 prestigeButton.interactable = true;
@@ -216,6 +236,17 @@ public partial class Basics : MonoBehaviour
                 holdStart = Time.time;
             }
         }
+
+        if(isDownPerm)
+        {
+            holdCurrent = Time.time;
+            holdElapsed = holdCurrent - holdStart;
+            if(holdElapsed > .2f)
+            {
+                UpgradePerm(holdInt);
+                holdStart = Time.time;
+            }
+        }
     }
 
     // text functions
@@ -231,6 +262,65 @@ public partial class Basics : MonoBehaviour
         goldPerSec *= multPerSec;
         goldPerSec *= permMultPerSec;
         goldPerSec *= keys*0.5 + 1;
+    }
+
+    private void CheckAlerts()
+    {
+        // crew
+        foreach(Pirate i in crew)
+            if(i.m_upgradeCost <= numGold)
+            {
+                crewAlert.gameObject.SetActive(true);
+                break;
+            }
+            else
+                crewAlert.gameObject.SetActive(false);
+
+        // ship
+        foreach(Multiplier i in ship)
+            if(i.m_upgradeCost <= numGold)
+            {
+                shipAlert.gameObject.SetActive(true);
+                break;
+            }
+            else
+                shipAlert.gameObject.SetActive(false);
+
+        // perm
+        foreach(Multiplier i in perm)
+            if(i.m_upgradeCost <= numRubies)
+            {
+                permAlert.gameObject.SetActive(true);
+                break;
+            }
+            else
+                permAlert.gameObject.SetActive(false);
+
+        // ach
+        UpdateAchievementsText();
+        for(int i = 0; i < numAchievements; i++)
+            if(!achievements[i].m_maxed && current[i] >= achievements[i].m_tiers[achievements[i].m_level-1])
+            {
+                achAlert.gameObject.SetActive(true);
+                break;
+            }
+            else
+                achAlert.gameObject.SetActive(false);
+
+        // prestige
+        CalculateKeys();
+        if(claimableKeys > 0)
+        {
+            prestigeAlert.gameObject.SetActive(true);
+            prestigeAlert2.gameObject.SetActive(true);
+        }
+        else
+        {
+            prestigeAlert.gameObject.SetActive(false);
+            prestigeAlert2.gameObject.SetActive(false);
+        }
+
+
     }
 
     // display numbers
@@ -252,7 +342,7 @@ public partial class Basics : MonoBehaviour
         {
             if(number/Math.Pow(10,i)<1000 && number/Math.Pow(10,i)>=1)
             {
-                return (number / Math.Pow(10,i)).ToString(decimals) + suffix[suffixIndex];
+                return (number / Math.Pow(10,i)).ToString(decimals) + " " + suffix[suffixIndex];
             }
             suffixIndex++;
         }
@@ -283,6 +373,7 @@ public partial class Basics : MonoBehaviour
         // achievements
         numRubies = PlayerPrefs.GetInt("numRubies",0);
         totalCrewUpgrades = PlayerPrefs.GetInt("totalCrewUpgrades",0); //saved in crew
+        totalShovelClicks = PlayerPrefs.GetInt("totalShovelClicks",0); //saved in crew
         foreach(Achievement i in achievements)
         {
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
@@ -292,6 +383,10 @@ public partial class Basics : MonoBehaviour
         foreach(Multiplier i in perm)
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
         permMultPerSec = double.Parse(PlayerPrefs.GetString("permMultPerSec", "0"));
+
+        // sound
+        musicOn = bool.Parse(PlayerPrefs.GetString("musicOn","true"));
+        sfxOn = bool.Parse(PlayerPrefs.GetString("sfxOn","true"));
     }
 
     private void SaveGold()
@@ -344,25 +439,90 @@ public partial class Basics : MonoBehaviour
         isDownShip = false;
     }
 
+    public void PermButtonDown(int i)
+    {   
+        isDownPerm = true;
+        holdInt = i;
+        holdStart = Time.time;
+        UpgradePerm(holdInt);
+    }
+
+    public void PermButtonUp()
+    {
+        isDownPerm = false;
+    }
+
     public void MusicController()
     {
-        if(playMusic)
+        if(musicOn)
         {
-            playMusic = false;
-            musicOn.gameObject.SetActive(false);
+            musicOn = false;
+            musicOnObject.gameObject.SetActive(false);
             music.Pause();
         }
         else
         {
-            playMusic = true;
-            musicOn.gameObject.SetActive(true);
+            musicOn = true;
+            musicOnObject.gameObject.SetActive(true);
             music.Play();
         }
+
+        SaveSound();
+    }
+
+    public void SoundEffectsController()
+    {
+        if(sfxOn)
+        {
+            sfxOn = false;
+            sfxButtonOn.gameObject.SetActive(false);
+            clickSound.mute = true;
+        }
+        else
+        {
+            sfxOn = true;
+            sfxButtonOn.gameObject.SetActive(true);
+            clickSound.mute = false;
+        }
+
+        SaveSound();
+    }
+
+    private void InitSound()
+    {
+        if(musicOn)
+        {
+            musicOnObject.gameObject.SetActive(true);
+            music.Play();
+        }
+        else
+        {
+            musicOnObject.gameObject.SetActive(false);
+            music.Pause();
+        }
+
+        if(sfxOn)
+        {
+            sfxButtonOn.gameObject.SetActive(true);
+            clickSound.mute = false;
+        }
+        else
+        {
+            sfxButtonOn.gameObject.SetActive(false);
+            clickSound.mute = true;
+        }
+    }
+
+    private void SaveSound()
+    {
+        PlayerPrefs.SetString("musicOn",musicOn.ToString());
+        PlayerPrefs.SetString("sfxOn",sfxOn.ToString());
     }
 
     public void ClickSound()
     {
-        clickSound.Play();
+        if(sfxOn)
+            clickSound.Play();
     }
 
 }

@@ -53,6 +53,7 @@ public partial class Basics : MonoBehaviour
     {
         numGold += crew[0].m_clickPower;
         totalGold += crew[0].m_clickPower;
+        totalShovelClicks++;
     }
 
     // upgrade funcitons
@@ -61,7 +62,7 @@ public partial class Basics : MonoBehaviour
         numGold -= crew[i].Upgrade(numGold);
         doUpdateCrewText = crew[i].m_didUpdate;
         if(doUpdateCrewText)
-            clickSound.Play();
+            ClickSound();
     }
 
     private void UpdateCrewText()
@@ -81,6 +82,7 @@ public partial class Basics : MonoBehaviour
 
         // achievments
         PlayerPrefs.SetInt("totalCrewUpgrades", totalCrewUpgrades);
+        PlayerPrefs.SetInt("totalShovelClicks", totalShovelClicks);
 
         if(prestige)
         {

@@ -7,9 +7,12 @@ using UnityEngine.UI;
 public partial class Basics : MonoBehaviour
 {
     // VARS
-    const int numShip = 1;
+    const int numShip = 4;
     public Multiplier[] ship = {
-        new Multiplier("Sail",2,0,100),
+        new Multiplier("Sails",2,0,10000),
+        new Multiplier("Rudder",4,0,100000000),
+        new Multiplier("Crows Nesr",6,0,1000000000000),
+        new Multiplier("Cannons",8,0,10000000000000000),
     };
 
     public Text[] shipHeaderText = new Text[numShip];
@@ -39,7 +42,7 @@ public partial class Basics : MonoBehaviour
         numGold -= ship[i].Upgrade(numGold);
         doUpdateShipText = ship[i].m_didUpdate;
         if(doUpdateShipText)
-            clickSound.Play();
+            ClickSound();
     }
 
     public void getMultSec()

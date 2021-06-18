@@ -13,6 +13,9 @@ public class ChangeScene : MonoBehaviour
     public GameObject settingsMenu;
     public GameObject idleMenu;
     public GameObject breakdownMenu;
+    public GameObject creditsMenu;
+
+    public AudioSource clickSound;
 
     void Start()
     {
@@ -23,6 +26,7 @@ public class ChangeScene : MonoBehaviour
         prestigeMenu.gameObject.SetActive(false);
         settingsMenu.gameObject.SetActive(false);
         breakdownMenu.gameObject.SetActive(false);
+        creditsMenu.gameObject.SetActive(false);
     }
 
     public void Ship()
@@ -30,6 +34,7 @@ public class ChangeScene : MonoBehaviour
         crewMenu.gameObject.SetActive(false);
         shipMenu.gameObject.SetActive(true);
         permMenu.gameObject.SetActive(false);
+        clickSound.Play();
     }
 
     public void Crew()
@@ -37,6 +42,7 @@ public class ChangeScene : MonoBehaviour
         crewMenu.gameObject.SetActive(true);
         shipMenu.gameObject.SetActive(false);
         permMenu.gameObject.SetActive(false);
+        clickSound.Play();
     }
 
     public void Perm()
@@ -44,6 +50,7 @@ public class ChangeScene : MonoBehaviour
         permMenu.gameObject.SetActive(true);
         crewMenu.gameObject.SetActive(false);
         shipMenu.gameObject.SetActive(false);
+        clickSound.Play();
     }
 
     public void Achievments()
@@ -56,6 +63,7 @@ public class ChangeScene : MonoBehaviour
             prestigeMenu.gameObject.SetActive(false);
             breakdownMenu.gameObject.SetActive(false);
         }
+        clickSound.Play();
     }
 
     public void Prestige()
@@ -68,6 +76,7 @@ public class ChangeScene : MonoBehaviour
             achievementMenu.gameObject.SetActive(false);
             breakdownMenu.gameObject.SetActive(false);
         }
+        clickSound.Play();
     }
 
     public void Settings()
@@ -78,6 +87,7 @@ public class ChangeScene : MonoBehaviour
         {
             settingsMenu.gameObject.SetActive(true);
         }
+        clickSound.Play();
     }
 
     public void Breakdown()
@@ -90,10 +100,23 @@ public class ChangeScene : MonoBehaviour
             achievementMenu.gameObject.SetActive(false);
             prestigeMenu.gameObject.SetActive(false);
         }
+        clickSound.Play();
+    }
+
+    public void Credits()
+    {
+        if(creditsMenu.gameObject.activeSelf)
+            creditsMenu.gameObject.SetActive(false);
+        else
+        {
+            creditsMenu.gameObject.SetActive(true);
+        }
+        clickSound.Play();
     }
 
     public void LeaveIdle()
     {
         idleMenu.gameObject.SetActive(false);
+        clickSound.Play();
     }
 }

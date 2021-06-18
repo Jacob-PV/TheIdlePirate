@@ -37,39 +37,39 @@ public class Multiplier
         m_didUpdate = false;
 
         // gold
-        if(!m_isRuby && numCoin >= m_upgradeCost)
+        if(numCoin >= m_upgradeCost)
         {
             m_level++;
             cost = m_upgradeCost;
             m_currentMultiple = m_level * m_multipleInterval;
             if(!m_isRuby)
-                m_upgradeCost = m_costBase * Mathf.Pow(2, m_level);
+                m_upgradeCost = m_costBase * Math.Pow(m_multipleInterval*2, m_level);
             else  
-                m_upgradeCost = m_costBase * Mathf.Pow(1.15f, m_level); 
+                m_upgradeCost = Math.Round(m_costBase * Math.Pow(m_multipleInterval, m_level)); 
             UpdateText();
             m_didUpdate = true;
         }
 
         // ruby
-        if(m_isRuby && numCoin >= m_upgradeCost)
-        {
-            m_level++;
-            cost = m_upgradeCost;
-            m_currentMultiple = m_level * m_multipleInterval;
-            m_upgradeCost = Mathf.Round((float)m_costBase * Mathf.Pow(1.15f, m_level));  
-            UpdateText();
-            m_didUpdate = true;
-        }
+        // if(m_isRuby && numCoin >= m_upgradeCost)
+        // {
+        //     m_level++;
+        //     cost = m_upgradeCost;
+        //     m_currentMultiple = m_level * m_multipleInterval;
+        //     m_upgradeCost = Mathf.Round((float)m_costBase * Mathf.Pow(1.15f, m_level));  
+        //     UpdateText();
+        //     m_didUpdate = true;
+        // }
         return cost;
     }
 
     public void UpdateText()
     {
-        m_headerText = m_name + "\n" + m_currentMultiple + "x\nLevel " + m_level;
+        m_headerText = m_name + "\nMultiplier: " + m_currentMultiple + "x\nLevel " + m_level;
         if(!m_isRuby)
             m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost);
         else
-            m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost) + "R";
+            m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost) + " Rubies";
     }
 
     public void InitText()
@@ -78,9 +78,9 @@ public class Multiplier
         if(m_currentMultiple == 0)
             m_currentMultiple = 1;
         if(!m_isRuby)
-            m_upgradeCost = m_costBase * Mathf.Pow(2, m_level);
+            m_upgradeCost = m_costBase * Math.Pow(m_multipleInterval*2, m_level);
         else  
-            m_upgradeCost = Mathf.Round((float)m_costBase * Mathf.Pow(1.15f, m_level)); 
+            m_upgradeCost = Math.Round(m_costBase * Math.Pow(m_multipleInterval, m_level)); 
         UpdateText();
     }
 
@@ -94,7 +94,7 @@ public class Multiplier
         {
             if(number/Math.Pow(10,i)<1000 && number/Math.Pow(10,i)>=1)
             {
-                return (number / Math.Pow(10,i)).ToString(decimals) + suffix[suffixIndex];
+                return (number / Math.Pow(10,i)).ToString(decimals) + " " + suffix[suffixIndex];
             }
             suffixIndex++;
         }

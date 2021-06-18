@@ -9,10 +9,12 @@ public partial class Basics : MonoBehaviour
     // VARS
     bool doUpdateAchText = true;
 
-    const int numAchievements = 2;
+    const int numAchievements = 4;
     public Achievement[] achievements = {
-        new Achievement("Crew Upgrades", new double[] {10,50,100},new int[] {5,10,20}),
-        new Achievement("Total Gold", new double[] {1000,10000,100000,1000000}, new int[] {5, 10, 20, 40}),
+        new Achievement("Crew Upgrades", new double[] {10,50,100,1000},new int[] {5,10,20,40}),
+        new Achievement("Total Gold", new double[] {1000,1000000,1000000000,1000000000000}, new int[] {5, 10, 20, 40}),
+        new Achievement("Total Shovel Clicks", new double[] {10,100,1000,10000}, new int[] {5,10,20,40}),
+        new Achievement("Gold Per Second", new double[] {1000,1000000,1000000000,1000000000000,1000000000000000,1000000000000000000}, new int[] {5,10,20,40,80,160}),
     };
     public Text[] achievmentsHeader = new Text[numAchievements];
     public Text[] achievmentsClaim = new Text[numAchievements];
@@ -32,8 +34,8 @@ public partial class Basics : MonoBehaviour
         }
 
         // update external text
-        current[0] = totalCrewUpgrades;
-        current[1] = totalGold;
+        UpdateCurrent();
+        
         for(int i = 0; i < numAchievements; i++)
         {
             // text
@@ -50,6 +52,14 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    private void UpdateCurrent()
+    {
+        current[0] = totalCrewUpgrades;
+        current[1] = totalGold;
+        current[2] = totalShovelClicks;
+        current[3] = goldPerSec * Time.deltaTime;
+    }
+
     public void Claim(int i)
     {
         if(claimButton[i].interactable == true)
@@ -58,7 +68,14 @@ public partial class Basics : MonoBehaviour
             achievements[i].m_level++;
             achievements[i].UpdateText();
             SaveAch();
+            ClickSound();
         }
+    }
+
+    private void InitAchText()
+    {
+        foreach(Achievement i in achievements)
+            i.UpdateText();
     }
 
     private void SaveAch()

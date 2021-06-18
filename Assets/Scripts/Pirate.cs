@@ -60,7 +60,7 @@ public class Pirate
         {
             if(number/Math.Pow(10,i)<1000 && number/Math.Pow(10,i)>=1)
             {
-                return (number / Math.Pow(10,i)).ToString(decimals) + suffix[suffixIndex];
+                return (number / Math.Pow(10,i)).ToString(decimals) + " " + suffix[suffixIndex];
             }
             suffixIndex++;
         }
