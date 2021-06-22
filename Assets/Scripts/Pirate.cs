@@ -53,8 +53,11 @@ public class Pirate
     // display numbers
     private string DisplayNumber(double number, string decimals = "f3")
     {
-        string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
-            "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
+        // string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
+        //     "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
+        string[] suffix = new string[] {"M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qad","Qid","Sxd",
+            "Spd","Ocd","Nod","Vg","Uvg","Dvg"};
+        
         int suffixIndex = 0;
         for(int i = 6; i <= suffix.Length+6; i=i+3)
         {
@@ -69,10 +72,10 @@ public class Pirate
 
     public void UpdateText()
     {
-        m_headerText = m_name + "\n" + m_clickPower + " Gold/Sec\nLevel " + m_level; 
+        m_headerText = m_name + " (" + m_clickBase + " GPS)\n" + DisplayNumber(m_clickPower) + " Gold/Sec\nLevel " + m_level; 
         m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost);
         if(m_name == "Shovel")
-            m_headerText = m_name + "\n" + m_clickPower + " Gold/Click\nLevel " + m_level;
+            m_headerText = m_name + "\n" + DisplayNumber(m_clickPower) + " Gold/Click\nLevel " + m_level;
     }
 
     public void InitText()

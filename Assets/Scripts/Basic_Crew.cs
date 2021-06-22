@@ -9,17 +9,19 @@ public partial class Basics : MonoBehaviour
     // VARS
     const int numCrew = 11;
     public Pirate[] crew = {
+        // price: 12^x
+        // power: 3^(x-1)
         new Pirate("Shovel",1,1,10,1),
-        new Pirate("Swashbuckler",0,0,100,2),
-        new Pirate("Cannon Fondler",0,0,1000,4),
-        new Pirate("Scout",0,0,10000,8),
-        new Pirate("Hunter",0,0,100000,16),
-        new Pirate("Blunderbuss",0,0,1000000,32),
-        new Pirate("Soldier",0,0,10000000,64),
-        new Pirate("Sword Master",0,0,100000000,128),
-        new Pirate("Sharpshooter", 0,0,1000000000,256),
-        new Pirate("Heavy Gunner",0,0,10000000000,512),
-        new Pirate("Captain", 0,0,100000000000,1024),
+        new Pirate("Swashbuckler",0,0,144,3),
+        new Pirate("Cannon Fondler",0,0,1728,9),
+        new Pirate("Scout",0,0,20736,27),
+        new Pirate("Hunter",0,0,248832,81),
+        new Pirate("Blunderbuss",0,0,2985984,243),
+        new Pirate("Soldier",0,0,35831808,729),
+        new Pirate("Sword Master",0,0,429981696,729),
+        new Pirate("Sharpshooter", 0,0,5159780352,6561),
+        new Pirate("Heavy Gunner",0,0,61917364224,19683),
+        new Pirate("Captain", 0,0,743008370688,59049),
     };
 
     public Text[] headerText = new Text[numCrew];
@@ -51,9 +53,18 @@ public partial class Basics : MonoBehaviour
     // click image funciton
     public void ShovelClick()
     {
-        numGold += crew[0].m_clickPower;
-        totalGold += crew[0].m_clickPower;
+        GetShovelPower();
+        numGold += shovelPower;
+        totalGold += shovelPower;
         totalShovelClicks++;
+    }
+
+    private void GetShovelPower()
+    {
+        shovelPower = crew[0].m_clickPower;
+        shovelPower *= multPerSec;
+        shovelPower *= permMultPerSec;
+        shovelPower *= keys*0.5 + 1;
     }
 
     // upgrade funcitons

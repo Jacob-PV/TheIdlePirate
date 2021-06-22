@@ -9,10 +9,10 @@ public partial class Basics : MonoBehaviour
     // VARS
     const int numShip = 4;
     public Multiplier[] ship = {
-        new Multiplier("Sails",2,0,10000),
-        new Multiplier("Rudder",4,0,100000000),
-        new Multiplier("Crows Nesr",6,0,1000000000000),
-        new Multiplier("Cannons",8,0,10000000000000000),
+        new Multiplier("Sails",0.01,0,1000),
+        new Multiplier("Rudder",0.03,0,1000000),
+        new Multiplier("Crows Nest",0.05,0,1000000000),
+        new Multiplier("Cannons",0.07,0,1000000000000),
     };
 
     public Text[] shipHeaderText = new Text[numShip];

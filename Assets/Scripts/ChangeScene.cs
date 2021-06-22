@@ -14,6 +14,7 @@ public class ChangeScene : MonoBehaviour
     public GameObject idleMenu;
     public GameObject breakdownMenu;
     public GameObject creditsMenu;
+    public GameObject adErrorMenu;
 
     public AudioSource clickSound;
 
@@ -27,6 +28,7 @@ public class ChangeScene : MonoBehaviour
         settingsMenu.gameObject.SetActive(false);
         breakdownMenu.gameObject.SetActive(false);
         creditsMenu.gameObject.SetActive(false);
+        adErrorMenu.gameObject.SetActive(false);
     }
 
     public void Ship()
@@ -117,6 +119,12 @@ public class ChangeScene : MonoBehaviour
     public void LeaveIdle()
     {
         idleMenu.gameObject.SetActive(false);
+        clickSound.Play();
+    }
+
+    public void LeaveAdError()
+    {
+        adErrorMenu.gameObject.SetActive(false);
         clickSound.Play();
     }
 }

@@ -11,10 +11,10 @@ public partial class Basics : MonoBehaviour
     private bool doUpdatePermText;
     const int numPerm = 4;
     public Multiplier[] perm = {
-        new Multiplier("Black Sails",3,0,5,true),
-        new Multiplier("Golden Rudder",5,0,10,true),
-        new Multiplier("Advanced Crows Nest",7,0,20,true),
-        new Multiplier("Silver Cannon",9,0,40,true),
+        new Multiplier("Black Sails",0.02,0,1,true),
+        new Multiplier("Golden Rudder",0.04,0,2,true),
+        new Multiplier("Tall Crows Nest",0.06,0,4,true),
+        new Multiplier("Silver Cannon",0.08,0,8,true),
     };
 
     public Text[] permHeaderText = new Text[numPerm];

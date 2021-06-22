@@ -41,11 +41,11 @@ public class Multiplier
         {
             m_level++;
             cost = m_upgradeCost;
-            m_currentMultiple = m_level * m_multipleInterval;
+            m_currentMultiple = m_level * m_multipleInterval + 1;
             if(!m_isRuby)
-                m_upgradeCost = m_costBase * Math.Pow(m_multipleInterval*2, m_level);
+                m_upgradeCost = m_costBase * Math.Pow(2, m_level);
             else  
-                m_upgradeCost = Math.Round(m_costBase * Math.Pow(m_multipleInterval, m_level)); 
+                m_upgradeCost = Math.Round(m_costBase * Math.Pow(2, m_level)); 
             UpdateText();
             m_didUpdate = true;
         }
@@ -65,7 +65,7 @@ public class Multiplier
 
     public void UpdateText()
     {
-        m_headerText = m_name + "\nMultiplier: " + m_currentMultiple + "x\nLevel " + m_level;
+        m_headerText = m_name + " (" + (m_multipleInterval * 100) + "%)\nGPS Boost: " + ((m_currentMultiple - 1) * 100).ToString("f0") + "%\nLevel " + m_level;
         if(!m_isRuby)
             m_upgradeText = "Upgrade\nCost:\n" + DisplayNumber(m_upgradeCost);
         else
@@ -74,21 +74,24 @@ public class Multiplier
 
     public void InitText()
     {
-        m_currentMultiple = m_level * m_multipleInterval;
+        m_currentMultiple = m_level * m_multipleInterval + 1;
         if(m_currentMultiple == 0)
             m_currentMultiple = 1;
         if(!m_isRuby)
-            m_upgradeCost = m_costBase * Math.Pow(m_multipleInterval*2, m_level);
+            m_upgradeCost = m_costBase * Math.Pow(2, m_level);
         else  
-            m_upgradeCost = Math.Round(m_costBase * Math.Pow(m_multipleInterval, m_level)); 
+            m_upgradeCost = Math.Round(m_costBase * Math.Pow(2, m_level)); 
         UpdateText();
     }
 
     // display numbers
     private string DisplayNumber(double number, string decimals = "f3")
     {
-        string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
-            "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
+        // string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
+        //     "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
+        string[] suffix = new string[] {"M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qad","Qid","Sxd",
+            "Spd","Ocd","Nod","Vg","Uvg","Dvg"};
+        
         int suffixIndex = 0;
         for(int i = 6; i <= suffix.Length+6; i=i+3)
         {

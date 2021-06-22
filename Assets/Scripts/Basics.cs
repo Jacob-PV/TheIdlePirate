@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.Advertisements;
 
 public partial class Basics : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public partial class Basics : MonoBehaviour
     public Text rubiesText;
     private bool isFirstRun;
     public double totalGold;
+    private double shovelPower;
 
     public double multPerSec;
 
@@ -53,6 +55,8 @@ public partial class Basics : MonoBehaviour
     public Text idelIncome;
     private double idleGold;
     public GameObject idleMenu;
+    int doubleIdleUses;
+    public GameObject adErrorMenu;
 
     // breakdown
     public Text breakdownText;
@@ -77,6 +81,10 @@ public partial class Basics : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // ads
+        Advertisement.Initialize("4176969");
+        Advertisement.AddListener(this);
+
         // frames
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 30;
@@ -84,6 +92,7 @@ public partial class Basics : MonoBehaviour
         isFirstRun = true;
         totalCrewUpgrades = 0;
         totalShovelClicks = 0;
+        doubleIdleUses = 0;
         numRubies = 0;
         claimableKeys = 0;
         didPrestige = false;
@@ -99,7 +108,7 @@ public partial class Basics : MonoBehaviour
 
         //idle
         currentTime = DateTime.Now;
-        // Load();
+        Load();
         oldTime = currentTime;
         currentTime = DateTime.Now;
         timeAway = currentTime - oldTime;
@@ -208,10 +217,11 @@ public partial class Basics : MonoBehaviour
         // breakdown
         if(breakdownMenu.gameObject.activeSelf || isFirstRun)
         {
-            breakdownText.text = "Gold/Click: " + crew[0].m_clickPower
-                + "\nShip Multipliers: " + multPerSec + "x"
-                + "\nPermanent Multipliers: " + permMultPerSec + "x"
-                + "\nSkelaton Keys: " + (keys * 0.5 + 1) + "x";
+            GetShovelPower();
+            breakdownText.text = "Gold/Click: " + DisplayNumber(shovelPower, true)
+                + "\nShip Boost: " + DisplayNumber((multPerSec-1)*100, true) + "%"
+                + "\nPermanent Boost: " + DisplayNumber((permMultPerSec-1)*100, true) + "%"
+                + "\nSkelaton Keys: " + DisplayNumber((keys * 0.05) * 100, true) + "%";
         }
 
         // hold upgrade
@@ -261,7 +271,7 @@ public partial class Basics : MonoBehaviour
         }
         goldPerSec *= multPerSec;
         goldPerSec *= permMultPerSec;
-        goldPerSec *= keys*0.5 + 1;
+        goldPerSec *= keys*0.05 + 1;
     }
 
     private void CheckAlerts()
@@ -324,7 +334,7 @@ public partial class Basics : MonoBehaviour
     }
 
     // display numbers
-    private string DisplayNumber(double number, string decimals = "f3")
+    private string DisplayNumber(double number, bool mult = false, string decimals = "f3")
     {
         // if(number >= 1000000000000)
         //     return (number / 1000000000000).ToString(decimals) + "T";
@@ -335,8 +345,11 @@ public partial class Basics : MonoBehaviour
         // else
         //     return number.ToString("f0");
 
-        string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
-            "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
+        // string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
+            // "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
+        string[] suffix = new string[] {"M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qad","Qid","Sxd",
+            "Spd","Ocd","Nod","Vg","Uvg","Dvg"};
+
         int suffixIndex = 0;
         for(int i = 6; i <= suffix.Length+6; i=i+3)
         {
@@ -346,7 +359,10 @@ public partial class Basics : MonoBehaviour
             }
             suffixIndex++;
         }
-        return number.ToString("f0");
+        if(mult)
+            return number.ToString("f3");
+        else
+            return number.ToString("f0");
     }
 
     // load and save
@@ -374,6 +390,7 @@ public partial class Basics : MonoBehaviour
         numRubies = PlayerPrefs.GetInt("numRubies",0);
         totalCrewUpgrades = PlayerPrefs.GetInt("totalCrewUpgrades",0); //saved in crew
         totalShovelClicks = PlayerPrefs.GetInt("totalShovelClicks",0); //saved in crew
+        doubleIdleUses = PlayerPrefs.GetInt("doubleIdleUses", 0);
         foreach(Achievement i in achievements)
         {
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
