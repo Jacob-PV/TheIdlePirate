@@ -8,6 +8,7 @@ public partial class Basics : MonoBehaviour
 {
     // VARS
     const int numCrew = 11;
+    const int numMults = 7;
     public Pirate[] crew = {
         // price: 12^x
         // power: 3^(x-1)
@@ -27,6 +28,12 @@ public partial class Basics : MonoBehaviour
     public Text[] headerText = new Text[numCrew];
     public Text[] upgradeText = new Text[numCrew];
     public Button[] upgradeButton = new Button[numCrew];
+
+    // mults
+    public Text[] multText = new Text[numMults];
+    public Text[] multButtonText = new Text[numMults];
+    public Button[] multButton = new Button[numMults];
+    public GameObject indMultMenu;
 
     // METHODS
     private void InitCrewText()
@@ -89,6 +96,9 @@ public partial class Basics : MonoBehaviour
         {
             PlayerPrefs.SetInt(i.m_name + ".m_level", i.m_level);
             PlayerPrefs.SetString(i.m_name + ".m_clickPower", i.m_clickPower.ToString("f0"));
+            // mult
+            for(int j = 0; j < numMults; j++)
+                PlayerPrefs.SetString(i.m_name + "tiersBought[" + j + "]", i.m_tiersBought[j].ToString());
         } 
 
         // achievments
@@ -113,5 +123,38 @@ public partial class Basics : MonoBehaviour
             else
                 upgradeButton[i].interactable = false;
         }
+    }
+
+    public void OpenIndMults(int n)
+    {
+        indMultInt = n;
+        foreach(Text i in multText)
+            i.text = "2x " + crew[indMultInt].m_name + " GPS";
+        for(int i = 0; i < numMults; i++)
+        {
+            if(!crew[indMultInt].m_tiersBought[i])
+                multButtonText[i].text = DisplayNumber(crew[indMultInt].m_upgradeTierCosts[i]);
+            else
+                multButtonText[i].text = "Claimed";
+        }
+        indMultMenu.gameObject.SetActive(true);
+    }
+
+    private void ColorMults()
+    {
+        for(int i = 0; i < numMults; i++)
+            if(!crew[indMultInt].m_tiersBought[i] && crew[indMultInt].m_level >= crew[indMultInt].m_upgradeTiers[i] && crew[indMultInt].m_upgradeTierCosts[i] <= numGold)
+                multButton[i].interactable = true;
+            else
+                multButton[i].interactable = false;
+    }
+
+    // n in index of mult 0 at top 1 next down...
+    public void BuyMult(int n)
+    {
+        crew[indMultInt].m_tiersBought[n] = true;
+        crew[indMultInt].m_indMult *= 2;
+        crew[indMultInt].InitText();
+        SaveCrew();
     }
 }

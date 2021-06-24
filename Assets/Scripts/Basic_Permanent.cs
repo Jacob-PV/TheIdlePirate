@@ -45,6 +45,7 @@ public partial class Basics : MonoBehaviour
         doUpdatePermText = perm[i].m_didUpdate;
         if(doUpdatePermText)
             ClickSound();
+        PlayerPrefs.SetInt("numRubies", numRubies);
     }
 
     public void getpermMultSec()

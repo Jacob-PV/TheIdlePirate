@@ -64,11 +64,13 @@ public partial class Basics : MonoBehaviour
 
     // sound
     public AudioSource clickSound;
-    public AudioSource music;
+    const int numSongs = 3;
+    public AudioSource[] music = new AudioSource[numSongs];
     public GameObject musicOnObject;
     private bool musicOn;
     public bool sfxOn;
     public GameObject sfxButtonOn;
+    int songIndex;
 
     // alert
     public GameObject crewAlert;
@@ -77,6 +79,9 @@ public partial class Basics : MonoBehaviour
     public GameObject achAlert;
     public GameObject prestigeAlert;
     public GameObject prestigeAlert2;
+
+    //
+    private int indMultInt;
 
     // Start is called before the first frame update
     void Start()
@@ -96,6 +101,7 @@ public partial class Basics : MonoBehaviour
         numRubies = 0;
         claimableKeys = 0;
         didPrestige = false;
+        indMultInt = 0;
         // sound
         musicOn = true;
         sfxOn = true;
@@ -114,7 +120,7 @@ public partial class Basics : MonoBehaviour
         timeAway = currentTime - oldTime;
         secTimeAway = timeAway.Days * 86400 + timeAway.Hours * 3600 + timeAway.Minutes * 60 + timeAway.Seconds;
         idleGold = goldPerSec * secTimeAway;
-        if(idleGold > 0)
+        if(idleGold >= 1)
         {
             numGold += idleGold;
             totalGold += idleGold;
@@ -134,10 +140,12 @@ public partial class Basics : MonoBehaviour
 
         InitSound();
 
-        InvokeRepeating("SaveGold",5f,5f);
+        InvokeRepeating("SaveGold",0f,5f);
 
         //tmp
         rubiesText.text = "Rubies: 0";
+
+        Debug.Log(DisplayNumber(2 * 743008370688 * Mathf.Pow(1.15f,410)));
     }
 
     // Update is called once per frame
@@ -160,7 +168,8 @@ public partial class Basics : MonoBehaviour
             UpdateShipText();
             getMultSec();
             getGoldSec();
-            SaveShip(); 
+            SaveShip();
+            SaveGold(); 
             doUpdateShipText = false;
             UpdateHeaderText();
         }
@@ -171,6 +180,7 @@ public partial class Basics : MonoBehaviour
             getpermMultSec();
             getGoldSec();
             SavePerm();
+            SaveGold(); 
             UpdateHeaderText();
             rubiesText.text = "Rubies: " + numRubies;
             doUpdatePermText = false;
@@ -181,6 +191,7 @@ public partial class Basics : MonoBehaviour
             UpdateUpgradeText();
             getGoldSec();
             SaveCrew();
+            SaveGold(); 
             doUpdateCrewText = false;
             UpdateHeaderText();
             if(!isFirstRun)
@@ -191,6 +202,8 @@ public partial class Basics : MonoBehaviour
         colorButton();
         permColorButton();
         shipButtonColor();
+        if(indMultMenu.gameObject.activeSelf)
+            ColorMults();
 
         // ach menu text
         if(achMenu.gameObject.activeSelf || isFirstRun)
@@ -223,6 +236,10 @@ public partial class Basics : MonoBehaviour
                 + "\nPermanent Boost: " + DisplayNumber((permMultPerSec-1)*100, true) + "%"
                 + "\nSkelaton Keys: " + DisplayNumber((keys * 0.05) * 100, true) + "%";
         }
+
+        // music
+        if(musicOn)
+            MusicUpdater();
 
         // hold upgrade
         if(isDown)
@@ -374,10 +391,20 @@ public partial class Basics : MonoBehaviour
         totalGold = double.Parse(PlayerPrefs.GetString("totalGold"));
 
         // crew
+        // foreach(Pirate i in crew)
+        // {
+        //     i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
+        //     i.m_clickPower = double.Parse(PlayerPrefs.GetString(i.m_name + ".m_clickPower","0"));
+        // }
+        crew[0].m_level = PlayerPrefs.GetInt(crew[0].m_name + ".m_level",1);
+        crew[0].m_clickPower = double.Parse(PlayerPrefs.GetString(crew[0].m_name + ".m_clickPower","1"));
         foreach(Pirate i in crew)
         {
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
             i.m_clickPower = double.Parse(PlayerPrefs.GetString(i.m_name + ".m_clickPower","0"));
+            // mult
+            for(int j = 0; j < numMults; j++)
+                i.m_tiersBought[j] = bool.Parse(PlayerPrefs.GetString(i.m_name + "tiersBought[" + j + "]", "false"));
         }
 
         // ship
@@ -408,15 +435,16 @@ public partial class Basics : MonoBehaviour
 
     private void SaveGold()
     {
+        Debug.Log("Saved");
         PlayerPrefs.SetString("numGold", numGold.ToString("f0"));
-        PlayerPrefs.SetString("currentTime", currentTime.ToString());
+        PlayerPrefs.SetString("currentTime", DateTime.Now.ToString());
         PlayerPrefs.SetString("goldPerSec", goldPerSec.ToString());
         PlayerPrefs.SetString("totalGold", totalGold.ToString());
 
         if(didPrestige)
         {
             PlayerPrefs.SetString("numGold", "0");
-            PlayerPrefs.SetString("currentTime", currentTime.ToString());
+            PlayerPrefs.SetString("currentTime", DateTime.Now.ToString());
             PlayerPrefs.SetString("goldPerSec", "0");
             PlayerPrefs.SetString("totalGold", totalGold.ToString());
         }
@@ -471,18 +499,21 @@ public partial class Basics : MonoBehaviour
 
     public void MusicController()
     {
+        // switch on/off
         if(musicOn)
         {
             musicOn = false;
             musicOnObject.gameObject.SetActive(false);
-            music.Pause();
+            music[songIndex].Pause();
         }
         else
         {
             musicOn = true;
             musicOnObject.gameObject.SetActive(true);
-            music.Play();
+            music[songIndex].Play();
         }
+
+        // loop through songs
 
         SaveSound();
     }
@@ -507,15 +538,18 @@ public partial class Basics : MonoBehaviour
 
     private void InitSound()
     {
+        songIndex = UnityEngine.Random.Range(0,numSongs);
+
+        // check if music on/off
         if(musicOn)
         {
             musicOnObject.gameObject.SetActive(true);
-            music.Play();
+            music[songIndex].Play();
         }
         else
         {
             musicOnObject.gameObject.SetActive(false);
-            music.Pause();
+            // music[songIndex].Pause();
         }
 
         if(sfxOn)
@@ -527,6 +561,20 @@ public partial class Basics : MonoBehaviour
         {
             sfxButtonOn.gameObject.SetActive(false);
             clickSound.mute = true;
+        }
+    }
+
+    private void MusicUpdater()
+    {
+        if(musicOn)
+        {
+            if(music[songIndex].isPlaying == false)
+            {
+                songIndex++;
+                if(songIndex >= numSongs)
+                    songIndex = 0;
+                music[songIndex].Play();
+            }
         }
     }
 
