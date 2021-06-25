@@ -16,6 +16,7 @@ public class ChangeScene : MonoBehaviour
     public GameObject creditsMenu;
     public GameObject adErrorMenu;
     public GameObject indMultsMenu;
+    public GameObject greedMenu;
 
     public AudioSource clickSound;
 
@@ -31,6 +32,7 @@ public class ChangeScene : MonoBehaviour
         creditsMenu.gameObject.SetActive(false);
         adErrorMenu.gameObject.SetActive(false);
         indMultsMenu.gameObject.SetActive(false);
+        greedMenu.gameObject.SetActive(false);
     }
 
     public void Ship()
@@ -133,6 +135,17 @@ public class ChangeScene : MonoBehaviour
     public void LeaveIndMult()
     {
         indMultsMenu.gameObject.SetActive(false);
+        clickSound.Play();
+    }
+
+    public void Geed()
+    {
+        if(greedMenu.gameObject.activeSelf)
+            greedMenu.gameObject.SetActive(false);
+        else
+        {
+            greedMenu.gameObject.SetActive(true);
+        }
         clickSound.Play();
     }
 }

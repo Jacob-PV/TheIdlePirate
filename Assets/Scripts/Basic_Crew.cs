@@ -35,6 +35,15 @@ public partial class Basics : MonoBehaviour
     public Button[] multButton = new Button[numMults];
     public GameObject indMultMenu;
 
+    // mult2
+    public Text indMultTotalBoostText;
+    public Text indMultLevelText;
+    public Text indMultBoostText;
+    public Text indMultNextLevelText;
+    public Button indMultButton;
+    public Text indMultButtonText;
+    private int currentTier;
+
     // METHODS
     private void InitCrewText()
     {
@@ -72,6 +81,7 @@ public partial class Basics : MonoBehaviour
         shovelPower *= multPerSec;
         shovelPower *= permMultPerSec;
         shovelPower *= keys*0.5 + 1;
+        shovelPower *= (greedPercent + 100) / 100;
     }
 
     // upgrade funcitons
@@ -89,7 +99,7 @@ public partial class Basics : MonoBehaviour
             i.UpdateText();
     }
 
-        public void SaveCrew(bool prestige = false)
+    public void SaveCrew(bool prestige = false)
     {
         // crew
         foreach(Pirate i in crew)
@@ -97,8 +107,9 @@ public partial class Basics : MonoBehaviour
             PlayerPrefs.SetInt(i.m_name + ".m_level", i.m_level);
             PlayerPrefs.SetString(i.m_name + ".m_clickPower", i.m_clickPower.ToString("f0"));
             // mult
-            for(int j = 0; j < numMults; j++)
-                PlayerPrefs.SetString(i.m_name + "tiersBought[" + j + "]", i.m_tiersBought[j].ToString());
+            // for(int j = 0; j < numMults; j++)
+            //     PlayerPrefs.SetString(i.m_name + "tiersBought[" + j + "]", i.m_tiersBought[j].ToString());
+            PlayerPrefs.SetInt(i.m_name + "m_currentTier", i.m_currentTier);
         } 
 
         // achievments
@@ -108,7 +119,10 @@ public partial class Basics : MonoBehaviour
         if(prestige)
         {
             foreach(Pirate i in crew)
+            {
                 PlayerPrefs.SetInt(i.m_name + ".m_level", 0);
+                PlayerPrefs.SetInt(i.m_name + "m_currentTier", 0);
+            }
             PlayerPrefs.SetInt("Shovel.m_level", 1);
         }
     }
@@ -128,33 +142,86 @@ public partial class Basics : MonoBehaviour
     public void OpenIndMults(int n)
     {
         indMultInt = n;
+        UpdateIndMultText();
+        indMultMenu.gameObject.SetActive(true);
+    }
+
+    private void UpdateIndMultText()
+    {
         foreach(Text i in multText)
             i.text = "2x " + crew[indMultInt].m_name + " GPS";
-        for(int i = 0; i < numMults; i++)
+        // for(int i = 0; i < numMults; i++)
+        // {
+        //     if(!crew[indMultInt].m_tiersBought[i])
+        //         multButtonText[i].text = DisplayNumber(crew[indMultInt].m_upgradeTierCosts[i]);
+        //     else
+        //         multButtonText[i].text = "Claimed";
+        // }
+        currentTier = crew[indMultInt].m_currentTier;
+        indMultButtonText.text = DisplayNumber(crew[indMultInt].m_upgradeTierCosts[currentTier]);
+        if(currentTier < numMults)
         {
-            if(!crew[indMultInt].m_tiersBought[i])
-                multButtonText[i].text = DisplayNumber(crew[indMultInt].m_upgradeTierCosts[i]);
+            indMultButtonText.text = DisplayNumber(crew[indMultInt].m_upgradeTierCosts[currentTier]);
+            indMultTotalBoostText.text = "Current " + crew[indMultInt].m_name + " Boost: " + DisplayNumber((crew[indMultInt].m_indMult - 1) * 100) + "%";
+            indMultLevelText.text = "Level " + crew[indMultInt].m_upgradeTiers[currentTier].ToString();
+            indMultBoostText.text = "50% " + crew[indMultInt].m_name + " GPS Boost";
+            if(currentTier+1 < numMults)
+                indMultNextLevelText.text = "Next Tier: Level " + crew[indMultInt].m_upgradeTiers[currentTier+1].ToString();
             else
-                multButtonText[i].text = "Claimed";
+                indMultNextLevelText.text = "Next Tier: None";
         }
-        indMultMenu.gameObject.SetActive(true);
+        else
+        {
+            indMultButtonText.text = "MAXED";
+            indMultTotalBoostText.text = "Current " + crew[indMultInt].m_name + " Boost: " + DisplayNumber((crew[indMultInt].m_indMult - 1) * 100) + "%";
+            indMultLevelText.text = "Level " + crew[indMultInt].m_upgradeTiers[currentTier-1].ToString();
+            indMultBoostText.text = "Maxed";
+            indMultNextLevelText.text = "Next Tier: None";
+        }
     }
 
     private void ColorMults()
     {
-        for(int i = 0; i < numMults; i++)
-            if(!crew[indMultInt].m_tiersBought[i] && crew[indMultInt].m_level >= crew[indMultInt].m_upgradeTiers[i] && crew[indMultInt].m_upgradeTierCosts[i] <= numGold)
-                multButton[i].interactable = true;
-            else
-                multButton[i].interactable = false;
+        // for(int i = 0; i < numMults; i++)
+        //     if(!crew[indMultInt].m_tiersBought[i] && crew[indMultInt].m_level >= crew[indMultInt].m_upgradeTiers[i] && crew[indMultInt].m_upgradeTierCosts[i] <= numGold)
+        //         multButton[i].interactable = true;
+        //     else
+        //         multButton[i].interactable = false;
+        currentTier = crew[indMultInt].m_currentTier;
+        if(currentTier < numMults && crew[indMultInt].m_level >= crew[indMultInt].m_upgradeTiers[currentTier] && crew[indMultInt].m_upgradeTierCosts[currentTier] <= numGold)
+            indMultButton.interactable = true;
+        else
+            indMultButton.interactable = false;
     }
 
     // n in index of mult 0 at top 1 next down...
-    public void BuyMult(int n)
+    public void BuyMult()
     {
-        crew[indMultInt].m_tiersBought[n] = true;
-        crew[indMultInt].m_indMult *= 2;
+        crew[indMultInt].m_currentTier++;
+        // crew[indMultInt].m_indMult += 2;
+        // if(crew[indMultInt].m_indMult == 3)
+        //     crew[indMultInt].m_indMult = 2;
         crew[indMultInt].InitText();
-        SaveCrew();
+        ColorMults();
+        UpdateIndMultText();
+        doUpdateCrewText = true;
+    }
+
+    public GameObject[] muteAlert = new GameObject[numCrew];
+    private bool doAlertMult;
+    private void CheckMultAlert()
+    {
+        doAlertMult = false;
+        for(int i = 0; i < numCrew; i++)
+        {
+            currentTier = crew[i].m_currentTier;
+            if(crew[i].m_upgradeTiers[currentTier] <= crew[i].m_level && crew[i].m_upgradeTierCosts[currentTier] <= numGold)
+            {
+                muteAlert[i].SetActive(true);
+                doAlertMult = true;
+            }
+            else
+                muteAlert[i].SetActive(false);
+        }
     }
 }

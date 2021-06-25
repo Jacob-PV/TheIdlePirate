@@ -115,6 +115,14 @@ public partial class Basics : MonoBehaviour
         //idle
         currentTime = DateTime.Now;
         Load();
+        InitShipText();
+        InitCrewText();
+        InitPermText();
+        InitAchText();
+
+        InitSound();
+        numGold = 9999999999999;
+        totalGold = 99999999999999;
         oldTime = currentTime;
         currentTime = DateTime.Now;
         timeAway = currentTime - oldTime;
@@ -122,10 +130,13 @@ public partial class Basics : MonoBehaviour
         idleGold = goldPerSec * secTimeAway;
         if(idleGold >= 1)
         {
+            // numGold += idleGold;
+            // totalGold += idleGold;
+            // Debug.Log(timeAway);
+            // Debug.Log(goldPerSec);
+            secTimeAway = 99999;
+            GreedPunish();
             numGold += idleGold;
-            totalGold += idleGold;
-            Debug.Log(timeAway);
-            Debug.Log(goldPerSec);
 
             idelIncome.text = "You earned " + DisplayNumber(idleGold) + " Gold while you were away!";
             idleMenu.gameObject.SetActive(true);
@@ -145,7 +156,7 @@ public partial class Basics : MonoBehaviour
         //tmp
         rubiesText.text = "Rubies: 0";
 
-        Debug.Log(DisplayNumber(2 * 743008370688 * Mathf.Pow(1.15f,410)));
+        // Debug.Log(DisplayNumber(2 * 743008370688 * Mathf.Pow(1.15f,410)));
     }
 
     // Update is called once per frame
@@ -198,6 +209,12 @@ public partial class Basics : MonoBehaviour
                 totalCrewUpgrades++;
         }
 
+        // greed
+        if(greedMenu.gameObject.activeSelf)
+        {
+            CheckGreedSlider();
+        }
+
         // color
         colorButton();
         permColorButton();
@@ -234,6 +251,7 @@ public partial class Basics : MonoBehaviour
             breakdownText.text = "Gold/Click: " + DisplayNumber(shovelPower, true)
                 + "\nShip Boost: " + DisplayNumber((multPerSec-1)*100, true) + "%"
                 + "\nPermanent Boost: " + DisplayNumber((permMultPerSec-1)*100, true) + "%"
+                + "\nGreed Boost: " + DisplayNumber(greedPercent) + "%"
                 + "\nSkelaton Keys: " + DisplayNumber((keys * 0.05) * 100, true) + "%";
         }
 
@@ -289,19 +307,27 @@ public partial class Basics : MonoBehaviour
         goldPerSec *= multPerSec;
         goldPerSec *= permMultPerSec;
         goldPerSec *= keys*0.05 + 1;
+        goldPerSec *= (greedPercent + 100) / 100;
     }
 
     private void CheckAlerts()
     {
         // crew
-        foreach(Pirate i in crew)
-            if(i.m_upgradeCost <= numGold)
-            {
-                crewAlert.gameObject.SetActive(true);
-                break;
-            }
-            else
-                crewAlert.gameObject.SetActive(false);
+        // mults
+        CheckMultAlert();
+        if(!doAlertMult)
+        {
+            foreach(Pirate i in crew)
+                if(i.m_upgradeCost <= numGold)
+                {
+                    crewAlert.gameObject.SetActive(true);
+                    break;
+                }
+                else
+                    crewAlert.gameObject.SetActive(false);
+        }
+        else
+            crewAlert.gameObject.SetActive(true);
 
         // ship
         foreach(Multiplier i in ship)
@@ -336,7 +362,7 @@ public partial class Basics : MonoBehaviour
 
         // prestige
         CalculateKeys();
-        if(claimableKeys > 0)
+        if(claimableKeys >= 1)
         {
             prestigeAlert.gameObject.SetActive(true);
             prestigeAlert2.gameObject.SetActive(true);
@@ -403,8 +429,9 @@ public partial class Basics : MonoBehaviour
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
             i.m_clickPower = double.Parse(PlayerPrefs.GetString(i.m_name + ".m_clickPower","0"));
             // mult
-            for(int j = 0; j < numMults; j++)
-                i.m_tiersBought[j] = bool.Parse(PlayerPrefs.GetString(i.m_name + "tiersBought[" + j + "]", "false"));
+            // for(int j = 0; j < numMults; j++)
+            //     i.m_tiersBought[j] = bool.Parse(PlayerPrefs.GetString(i.m_name + "tiersBought[" + j + "]", "false"));
+            i.m_currentTier = PlayerPrefs.GetInt(i.m_name + "m_currentTier", 0);
         }
 
         // ship
@@ -427,6 +454,10 @@ public partial class Basics : MonoBehaviour
         foreach(Multiplier i in perm)
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
         permMultPerSec = double.Parse(PlayerPrefs.GetString("permMultPerSec", "0"));
+
+        // greed
+        greedPercent = PlayerPrefs.GetFloat("greedPercent", 0);
+        greed.value = greedPercent;
 
         // sound
         musicOn = bool.Parse(PlayerPrefs.GetString("musicOn","true"));

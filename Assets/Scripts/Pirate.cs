@@ -19,7 +19,7 @@ public class Pirate
     public int[] m_upgradeTiers;
     public double[] m_upgradeTierCosts;
     public bool[] m_tiersBought;
-    // private int m_nextTier;
+    public int m_currentTier;
 
     public Pirate(string name, int level = 0, double clickPower = 0, double costBase = 1, double clickBase = 1, float costCoefficient = 1.15f)
     {
@@ -33,15 +33,16 @@ public class Pirate
         UpdateText();
         m_didUpdate = true;
         m_indMult = 1;
-        m_upgradeTiers = new int[]{25, 50, 100,200,400,800,1600};
+        m_currentTier = 0;
+        m_upgradeTiers = new int[]{25,50,75,100,200,300,400};
         m_upgradeTierCosts = new double[]{
-            2 * m_costBase * Mathf.Pow(m_costCoefficient,25),
-            2 * m_costBase * Mathf.Pow(m_costCoefficient,50),
-            2 * m_costBase * Mathf.Pow(m_costCoefficient,100),
-            2 * m_costBase * Mathf.Pow(m_costCoefficient,200),
+            2 * m_costBase * Math.Pow(m_costCoefficient,25),
+            2 * m_costBase * Math.Pow(m_costCoefficient,50),
+            2 * m_costBase * Math.Pow(m_costCoefficient,75),
+            2 * m_costBase * Math.Pow(m_costCoefficient,100),
+            2 * m_costBase * Math.Pow(m_costCoefficient,200),
+            2 * m_costBase * Math.Pow(m_costCoefficient,300),
             2 * m_costBase * Math.Pow(m_costCoefficient,400),
-            2 * m_costBase * Math.Pow(m_costCoefficient,800),
-            2 * m_costBase * Mathf.Pow(m_costCoefficient,1),
             };
         m_tiersBought = new bool[]{false,false,false,false,false,false,false};
         // m_nextTier = 25;
@@ -80,8 +81,8 @@ public class Pirate
             m_clickPower = m_level * m_clickBase * m_indMult;
             // suggested 1.07 to 1.17
             // upgradeBase * (coefficent ^ numOwned)
-            m_upgradeCost = m_costBase * Mathf.Pow(m_costCoefficient,m_level);
-            m_upgradeCost = Mathf.Round((float)m_upgradeCost);
+            m_upgradeCost = m_costBase * Math.Pow(m_costCoefficient,m_level);
+            m_upgradeCost = Math.Round((float)m_upgradeCost);
             UpdateText();
         }
         return cost;
@@ -118,12 +119,17 @@ public class Pirate
     public void InitText()
     {
         // cost
-        m_upgradeCost = m_costBase * Mathf.Pow(m_costCoefficient,m_level);
-        m_upgradeCost = Mathf.Round((float)m_upgradeCost);
+        m_upgradeCost = m_costBase * Math.Pow(m_costCoefficient,m_level);
+        m_upgradeCost = Math.Round((float)m_upgradeCost);
         // click power
-        foreach(bool i in m_tiersBought)
-            if(i)
-                m_indMult *= 2;
+        m_indMult = 1 + m_currentTier * .5;
+        // foreach(bool i in m_tiersBought)
+        // {
+        //     // if(i)
+        //     //     m_indMult += 2;
+        //     // if(m_indMult == 3)
+        //     //     m_indMult = 2;
+        // }
 
         m_clickPower = m_level * m_clickBase * m_indMult;
         // IndMultHandler();
