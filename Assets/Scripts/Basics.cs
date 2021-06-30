@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using UnityEngine.Advertisements;
+using Google.Play.Review;
 
 public partial class Basics : MonoBehaviour
 {
@@ -21,8 +22,8 @@ public partial class Basics : MonoBehaviour
 
     public double multPerSec;
 
-    private bool doUpdateCrewText;
-    private bool doUpdateShipText;
+    // private bool doUpdateCrewText;
+    // private bool doUpdateShipText;
 
     // achievments
     public GameObject achMenu;
@@ -77,6 +78,7 @@ public partial class Basics : MonoBehaviour
     public GameObject shipAlert;
     public GameObject permAlert;
     public GameObject achAlert;
+    public GameObject achAlert2;
     public GameObject prestigeAlert;
     public GameObject prestigeAlert2;
 
@@ -87,12 +89,15 @@ public partial class Basics : MonoBehaviour
     void Start()
     {
         // ads
-        Advertisement.Initialize("4176969");
+        adError = false;
+        Advertisement.Initialize("4176969", true);
         Advertisement.AddListener(this);
 
         // frames
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 30;
+
+        timesAppOpened = 0; // review test
 
         isFirstRun = true;
         totalCrewUpgrades = 0;
@@ -102,13 +107,15 @@ public partial class Basics : MonoBehaviour
         claimableKeys = 0;
         didPrestige = false;
         indMultInt = 0;
+        crewLostGreed = 0;
         // sound
+        timesPrestiged = 0;
         musicOn = true;
         sfxOn = true;
 
-        doUpdateCrewText = true;
-        doUpdateShipText = true;
-        doUpdatePermText = true;
+        // doUpdateCrewText = true;
+        // doUpdateShipText = true;
+        // doUpdatePermText = true;
         multPerSec = 1;
         
 
@@ -121,8 +128,8 @@ public partial class Basics : MonoBehaviour
         InitAchText();
 
         InitSound();
-        numGold = 9999999999999;
-        totalGold = 99999999999999;
+        // numGold = 9999999999999;
+        // totalGold = 99999999999999;
         oldTime = currentTime;
         currentTime = DateTime.Now;
         timeAway = currentTime - oldTime;
@@ -134,7 +141,7 @@ public partial class Basics : MonoBehaviour
             // totalGold += idleGold;
             // Debug.Log(timeAway);
             // Debug.Log(goldPerSec);
-            secTimeAway = 99999;
+            // secTimeAway = 99999;
             GreedPunish();
             numGold += idleGold;
 
@@ -148,23 +155,37 @@ public partial class Basics : MonoBehaviour
         InitCrewText();
         InitPermText();
         InitAchText();
-
-        InitSound();
+        DoFirstRun();
+        SaveAll();
 
         InvokeRepeating("SaveGold",0f,5f);
 
         //tmp
         rubiesText.text = "Rubies: 0";
 
-        // Debug.Log(DisplayNumber(2 * 743008370688 * Mathf.Pow(1.15f,410)));
+        // Debug.Log(DisplayNumber(2 * 743008370688 * Math.Pow(1.15,410)));
+
+        // review test
+        timesAppOpened++;
+        PlayerPrefs.SetInt("timesAppOpened",timesAppOpened);
+        if(timesAppOpened == 5)
+        {
+            _reviewManager = new ReviewManager();
+            StartCoroutine(review());
+        }
+
+        // test
+        // a=0;
+        // // StartCoroutine(AdTest());
+        // Invoke("ad2", 3f);
     }
 
     // Update is called once per frame
     void Update()
     {
         // save
-        if(isFirstRun)
-            SaveAll();
+        // if(isFirstRun)
+        //     SaveAll();
 
         CheckAlerts();
 
@@ -174,40 +195,40 @@ public partial class Basics : MonoBehaviour
         goldText.text = "Gold: " + DisplayNumber(numGold);
         
         // ship text
-        if(doUpdateShipText)
-        {
-            UpdateShipText();
-            getMultSec();
-            getGoldSec();
-            SaveShip();
-            SaveGold(); 
-            doUpdateShipText = false;
-            UpdateHeaderText();
-        }
+        // if(doUpdateShipText)
+        // {
+        //     UpdateShipText();
+        //     getMultSec();
+        //     getGoldSec();
+        //     SaveShip();
+        //     SaveGold(); 
+        //     doUpdateShipText = false;
+        //     UpdateHeaderText();
+        // }
         // perm text
-        if(doUpdatePermText)
-        {
-            UpdatePermText();
-            getpermMultSec();
-            getGoldSec();
-            SavePerm();
-            SaveGold(); 
-            UpdateHeaderText();
-            rubiesText.text = "Rubies: " + numRubies;
-            doUpdatePermText = false;
-        }
+        // if(doUpdatePermText)
+        // {
+        //     UpdatePermText();
+        //     getpermMultSec();
+        //     getGoldSec();
+        //     SavePerm();
+        //     SaveGold(); 
+        //     UpdateHeaderText();
+        //     rubiesText.text = "Rubies: " + numRubies;
+        //     doUpdatePermText = false;
+        // }
         // crew menu text
-        if(doUpdateCrewText)
-        {
-            UpdateUpgradeText();
-            getGoldSec();
-            SaveCrew();
-            SaveGold(); 
-            doUpdateCrewText = false;
-            UpdateHeaderText();
-            if(!isFirstRun)
-                totalCrewUpgrades++;
-        }
+        // if(doUpdateCrewText)
+        // {
+        //     UpdateUpgradeText();
+        //     getGoldSec();
+        //     SaveCrew();
+        //     SaveGold(); 
+        //     doUpdateCrewText = false;
+        //     UpdateHeaderText();
+        //     if(!isFirstRun)
+        //         totalCrewUpgrades++;
+        // }
 
         // greed
         if(greedMenu.gameObject.activeSelf)
@@ -228,7 +249,6 @@ public partial class Basics : MonoBehaviour
             UpdateAchievementsText();
             //move once get perm buy menu
             rubiesText.text = "Rubies: " + numRubies;
-            isFirstRun = false;
         }
         
         // prestige
@@ -292,6 +312,48 @@ public partial class Basics : MonoBehaviour
                 holdStart = Time.time;
             }
         }
+
+        isFirstRun = false;
+    }
+
+    // update functions
+    private void DoUpdateShipText()
+    {
+        UpdateShipText();
+        getMultSec();
+        getGoldSec();
+        SaveShip();
+        SaveGold(); 
+        UpdateHeaderText();
+    }
+
+    private void DoUpdatePermText()
+    {
+        UpdatePermText();
+        getpermMultSec();
+        getGoldSec();
+        SavePerm();
+        SaveGold(); 
+        UpdateHeaderText();
+        rubiesText.text = "Rubies: " + numRubies;
+    }
+
+    private void DoUpdateCrewText()
+    {
+        UpdateUpgradeText();
+        getGoldSec();
+        SaveCrew();
+        SaveGold(); 
+        UpdateHeaderText();
+        if(!isFirstRun)
+            totalCrewUpgrades++;
+    }
+
+    private void DoFirstRun()
+    {
+        DoUpdateCrewText();
+        DoUpdatePermText();
+        DoUpdateShipText();
     }
 
     // text functions
@@ -355,10 +417,14 @@ public partial class Basics : MonoBehaviour
             if(!achievements[i].m_maxed && current[i] >= achievements[i].m_tiers[achievements[i].m_level-1])
             {
                 achAlert.gameObject.SetActive(true);
+                achAlert2.gameObject.SetActive(true);
                 break;
             }
             else
+            {
                 achAlert.gameObject.SetActive(false);
+                achAlert2.gameObject.SetActive(false);
+            }
 
         // prestige
         CalculateKeys();
@@ -391,7 +457,11 @@ public partial class Basics : MonoBehaviour
         // string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
             // "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
         string[] suffix = new string[] {"M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qad","Qid","Sxd",
-            "Spd","Ocd","Nod","Vg","Uvg","Dvg"};
+            "Spd","Ocd","Nod","Vg","Uvg","Dvg","aa","ab","ac","ad","ae","af","ag","ah","ai","aj","ak","al","am","an","ao",
+            "ap","aq","ar","as","at","au","av","aw","ax","ay","az","ba","bb","bc","bd","be","bf","bg","bh","bi","bj","bk",
+            "bl","bm","bn","bo","bp","bq","br","bs","bt","bu","bv","bw","bx","by","bz","ca","cb","cc","cd","ce","cf","cg",
+            "ch","ci","cj","ck","cl","cm","cn","co","cp","cq","cr","cs","ct","cu","cv","cw","cx","cy","cz","da","db","dc",
+            "dd","de","df","dg","dh","di","dj","dk","dl","dm","dn","do","dp","dq","dr","ds","dt","du","dv","dw","dx","dy"};
 
         int suffixIndex = 0;
         for(int i = 6; i <= suffix.Length+6; i=i+3)
@@ -445,6 +515,8 @@ public partial class Basics : MonoBehaviour
         totalCrewUpgrades = PlayerPrefs.GetInt("totalCrewUpgrades",0); //saved in crew
         totalShovelClicks = PlayerPrefs.GetInt("totalShovelClicks",0); //saved in crew
         doubleIdleUses = PlayerPrefs.GetInt("doubleIdleUses", 0);
+        crewLostGreed = PlayerPrefs.GetInt("crewLostGreed", 0); // saved in greed
+        timesPrestiged = PlayerPrefs.GetInt("timesPrestiged",0); // saved in prestige
         foreach(Achievement i in achievements)
         {
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
@@ -462,11 +534,14 @@ public partial class Basics : MonoBehaviour
         // sound
         musicOn = bool.Parse(PlayerPrefs.GetString("musicOn","true"));
         sfxOn = bool.Parse(PlayerPrefs.GetString("sfxOn","true"));
+
+        // review
+        timesAppOpened = PlayerPrefs.GetInt("timesAppOpened",0);
     }
 
     private void SaveGold()
     {
-        Debug.Log("Saved");
+        // Debug.Log("Saved");
         PlayerPrefs.SetString("numGold", numGold.ToString("f0"));
         PlayerPrefs.SetString("currentTime", DateTime.Now.ToString());
         PlayerPrefs.SetString("goldPerSec", goldPerSec.ToString());

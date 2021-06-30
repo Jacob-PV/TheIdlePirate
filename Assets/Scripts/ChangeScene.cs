@@ -17,6 +17,9 @@ public class ChangeScene : MonoBehaviour
     public GameObject adErrorMenu;
     public GameObject indMultsMenu;
     public GameObject greedMenu;
+    public GameObject featuresMenu;
+    public GameObject adLoadingMenu;
+    public GameObject feedbackMenu;
 
     public AudioSource clickSound;
 
@@ -33,6 +36,9 @@ public class ChangeScene : MonoBehaviour
         adErrorMenu.gameObject.SetActive(false);
         indMultsMenu.gameObject.SetActive(false);
         greedMenu.gameObject.SetActive(false);
+        featuresMenu.gameObject.SetActive(false);
+        adLoadingMenu.gameObject.SetActive(false);
+        feedbackMenu.gameObject.SetActive(false);
     }
 
     public void Ship()
@@ -145,6 +151,28 @@ public class ChangeScene : MonoBehaviour
         else
         {
             greedMenu.gameObject.SetActive(true);
+        }
+        clickSound.Play();
+    }
+
+    public void Features()
+    {
+        if(featuresMenu.gameObject.activeSelf)
+            featuresMenu.gameObject.SetActive(false);
+        else
+        {
+            featuresMenu.gameObject.SetActive(true);
+        }
+        clickSound.Play();
+    }
+
+    public void Feedback()
+    {
+        if(feedbackMenu.gameObject.activeSelf)
+            feedbackMenu.gameObject.SetActive(false);
+        else
+        {
+            feedbackMenu.gameObject.SetActive(true);
         }
         clickSound.Play();
     }

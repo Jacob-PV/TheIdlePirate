@@ -7,6 +7,7 @@ using System;
 // PRESTIGE
 public partial class Basics : MonoBehaviour
 {
+    private int timesPrestiged;
     public void Prestige()
     {
         // reset
@@ -25,12 +26,16 @@ public partial class Basics : MonoBehaviour
         foreach(Multiplier i in ship)
             i.InitText();
 
-        doUpdateShipText = true;
-        doUpdateCrewText = true;
+        // doUpdateShipText = true;
+        DoUpdateShipText();
+        // doUpdateCrewText = true;
+        DoUpdateCrewText();
 
         // add keys
         keys += claimableKeys;
         claimableKeys = 0;
+        timesPrestiged++;
+        PlayerPrefs.SetInt("timesPrestiged",timesPrestiged);
     }
 
     private void CalculateKeys()

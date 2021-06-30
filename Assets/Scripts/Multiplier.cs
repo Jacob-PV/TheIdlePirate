@@ -56,7 +56,7 @@ public class Multiplier
         //     m_level++;
         //     cost = m_upgradeCost;
         //     m_currentMultiple = m_level * m_multipleInterval;
-        //     m_upgradeCost = Mathf.Round((float)m_costBase * Mathf.Pow(1.15f, m_level));  
+        //     m_upgradeCost = Math.Round(m_costBase * Math.Pow(1.15, m_level));  
         //     UpdateText();
         //     m_didUpdate = true;
         // }
@@ -90,7 +90,11 @@ public class Multiplier
         // string[] suffix = new string[] {"Million","Billion","Trillion","Quadrillion","Quintillion","Sextillion","Septillion","Octillion","Nonillion","Decillion",
         //     "Undecillion","Duodecillion","Tredecillion","Quattuordecillion","Quindecillion","Sexdecillion","Septendecillion","Octodecillion","Novemdecillion","Vigintillion"};
         string[] suffix = new string[] {"M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qad","Qid","Sxd",
-            "Spd","Ocd","Nod","Vg","Uvg","Dvg"};
+            "Spd","Ocd","Nod","Vg","Uvg","Dvg","aa","ab","ac","ad","ae","af","ag","ah","ai","aj","ak","al","am","an","ao",
+            "ap","aq","ar","as","at","au","av","aw","ax","ay","az","ba","bb","bc","bd","be","bf","bg","bh","bi","bj","bk",
+            "bl","bm","bn","bo","bp","bq","br","bs","bt","bu","bv","bw","bx","by","bz","ca","cb","cc","cd","ce","cf","cg",
+            "ch","ci","cj","ck","cl","cm","cn","co","cp","cq","cr","cs","ct","cu","cv","cw","cx","cy","cz","da","db","dc",
+            "dd","de","df","dg","dh","di","dj","dk","dl","dm","dn","do","dp","dq","dr","ds","dt","du","dv","dw","dx","dy"};
         
         int suffixIndex = 0;
         for(int i = 6; i <= suffix.Length+6; i=i+3)

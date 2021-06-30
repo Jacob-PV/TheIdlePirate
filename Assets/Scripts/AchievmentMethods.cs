@@ -9,13 +9,15 @@ public partial class Basics : MonoBehaviour
     // VARS
     bool doUpdateAchText = true;
 
-    const int numAchievements = 5;
+    const int numAchievements = 7;
     public Achievement[] achievements = {
-        new Achievement("Crew Upgrades", new double[] {10,50,100,1000},new int[] {5,10,20,40}),
-        new Achievement("Total Gold", new double[] {1000,1000000,1000000000,1000000000000}, new int[] {5, 10, 20, 40}),
+        new Achievement("Crew Upgrades", new double[] {10,50,100,200,500,1000},new int[] {5,10,20,40,80,160}),
+        new Achievement("Total Gold", new double[] {1000,1000000,1000000000,1000000000000,1000000000000000,1000000000000000000}, new int[] {5, 10, 20, 40, 80, 160}),
         new Achievement("Total Shovel Clicks", new double[] {10,100,1000,10000}, new int[] {5,10,20,40}),
         new Achievement("Gold Per Second", new double[] {1000,1000000,1000000000,1000000000000,1000000000000000,1000000000000000000}, new int[] {5,10,20,40,80,160}),
         new Achievement("2x Idle Income Used", new double[] {1,2,4,7,11,16,12,19,27,36,46,57,69,82,96,111}, new int[] {10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160}),
+        new Achievement("Crewmates Lost To Greed", new double[] {1,10,30,50,90},new int[] {5,10,20,40,80}),
+        new Achievement("Prestige", new double[] {1,3,6,9},new int[] {5,10,20,40}),
     };
     public Text[] achievmentsHeader = new Text[numAchievements];
     public Text[] achievmentsClaim = new Text[numAchievements];
@@ -60,6 +62,7 @@ public partial class Basics : MonoBehaviour
         current[2] = totalShovelClicks;
         current[3] = goldPerSec;
         current[4] = doubleIdleUses;
+        current[5] = crewLostGreed;
     }
 
     public void Claim(int i)

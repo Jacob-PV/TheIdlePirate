@@ -40,9 +40,12 @@ public partial class Basics : MonoBehaviour
     public void UpgradeShip(int i)
     {
         numGold -= ship[i].Upgrade(numGold);
-        doUpdateShipText = ship[i].m_didUpdate;
-        if(doUpdateShipText)
+        // doUpdateShipText = ship[i].m_didUpdate;
+        if(ship[i].m_didUpdate)
+        {
+            DoUpdateShipText();
             ClickSound();
+        }
     }
 
     public void getMultSec()

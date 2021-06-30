@@ -15,6 +15,8 @@ public partial class Basics : MonoBehaviour
     private int takeAwayIndex;
     public Text greeOutputText;
     private int[] levelsRemoved = new int[numCrew];
+    private bool didLoseGreed;
+    private int crewLostGreed;
 
     private void CheckGreedSlider()
     {
@@ -59,6 +61,8 @@ public partial class Basics : MonoBehaviour
         for(int i = 0; i < numCrew; i++)
             levelsRemoved[i] = 0;
 
+        didLoseGreed = false;
+        greeOutputText.text = "Greed";
         // calculate idle goldl and punish
         while(secTimeAway >= 3600)
         {
@@ -74,6 +78,9 @@ public partial class Basics : MonoBehaviour
                         crew[takeAwayIndex].m_level--;
                         crew[takeAwayIndex].InitText();
                         crewLevels[takeAwayIndex]--;
+                        didLoseGreed = true;
+                        crewLostGreed++;
+                        PlayerPrefs.SetInt("crewLostGreed", crewLostGreed);
                         break;
                     }
                 }
@@ -86,10 +93,15 @@ public partial class Basics : MonoBehaviour
         }
         idleGold += goldPerSec * secTimeAway;
         // output
+        if(!didLoseGreed)
+            greeOutputText.text += ":\nYou lost no one to greed!";
+        else
+            greeOutputText.text += " Casualties:";
         for(int i = 0; i < numCrew; i++)
         {
             if(levelsRemoved[i] > 0)
-                greeOutputText.text += crew[i].m_name + " " + levelsRemoved[i] + "x | ";
+                greeOutputText.text += "\n" + crew[i].m_name + " " + levelsRemoved[i] + "x";
         }
+        SaveCrew();
     }
 }

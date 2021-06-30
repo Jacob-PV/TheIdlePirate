@@ -73,6 +73,7 @@ public partial class Basics : MonoBehaviour
         numGold += shovelPower;
         totalGold += shovelPower;
         totalShovelClicks++;
+        SaveCrew();
     }
 
     private void GetShovelPower()
@@ -88,9 +89,12 @@ public partial class Basics : MonoBehaviour
     public void Upgrade(int i)
     {
         numGold -= crew[i].Upgrade(numGold);
-        doUpdateCrewText = crew[i].m_didUpdate;
-        if(doUpdateCrewText)
+        // doUpdateCrewText = crew[i].m_didUpdate;
+        if(crew[i].m_didUpdate)
+        {
             ClickSound();
+            DoUpdateCrewText();
+        }
     }
 
     private void UpdateCrewText()
@@ -204,7 +208,8 @@ public partial class Basics : MonoBehaviour
         crew[indMultInt].InitText();
         ColorMults();
         UpdateIndMultText();
-        doUpdateCrewText = true;
+        // doUpdateCrewText = true;
+        DoUpdateCrewText();
     }
 
     public GameObject[] muteAlert = new GameObject[numCrew];

@@ -8,7 +8,7 @@ public partial class Basics : MonoBehaviour
 {
     // VARS
     public double permMultPerSec;
-    private bool doUpdatePermText;
+    // private bool doUpdatePermText;
     const int numPerm = 4;
     public Multiplier[] perm = {
         new Multiplier("Black Sails",0.02,0,1,true),
@@ -42,9 +42,12 @@ public partial class Basics : MonoBehaviour
     public void UpgradePerm(int i)
     {
         numRubies -= (int)perm[i].Upgrade(numRubies);
-        doUpdatePermText = perm[i].m_didUpdate;
-        if(doUpdatePermText)
+        // doUpdatePermText = perm[i].m_didUpdate;
+        if(perm[i].m_didUpdate)
+        {
             ClickSound();
+            DoUpdatePermText();
+        }
         PlayerPrefs.SetInt("numRubies", numRubies);
     }
 
