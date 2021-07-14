@@ -85,7 +85,7 @@ public partial class Basics : MonoBehaviour
                     }
                 }
                 getGoldSec();
-                Debug.Log(goldPerSec);
+                // Debug.Log(goldPerSec);
 
                 idleGold += goldPerSec * 3600;
             }

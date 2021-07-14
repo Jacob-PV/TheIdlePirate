@@ -36,10 +36,12 @@ public partial class Basics : MonoBehaviour
         claimableKeys = 0;
         timesPrestiged++;
         PlayerPrefs.SetInt("timesPrestiged",timesPrestiged);
+        PlayerPrefs.SetString("keys",keys.ToString());
     }
 
     private void CalculateKeys()
     {
-        claimableKeys = Math.Floor(150 * Math.Pow((totalGold/Math.Pow(10,15)),.5) - keys);
+        // og 10^15
+        claimableKeys = Math.Floor(150 * Math.Pow((totalGold/Math.Pow(10,12)),.5) - keys);
     }
 }

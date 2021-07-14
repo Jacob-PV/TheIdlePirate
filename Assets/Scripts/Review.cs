@@ -13,7 +13,7 @@ public partial class Basics : MonoBehaviour
 
     IEnumerator review()
     {
-        Debug.Log("review ran"); // test
+        // Debug.Log("review ran"); // test
 
         yield return new WaitForSeconds(1f);
 
@@ -41,7 +41,7 @@ public partial class Basics : MonoBehaviour
 
     public void Feedback()
     {
-        Application.OpenURL("mailto:shortstop900235@gmail.com");
+        Application.OpenURL("mailto:idlepirateadventure@gmail.com");
     }
 
 }

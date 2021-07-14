@@ -14,7 +14,7 @@ public partial class Basics : MonoBehaviour
         // power: 3^(x-1)
         new Pirate("Shovel",1,1,10,1),
         new Pirate("Swashbuckler",0,0,144,3),
-        new Pirate("Cannon Fondler",0,0,1728,9),
+        new Pirate("Gunner",0,0,1728,9),
         new Pirate("Scout",0,0,20736,27),
         new Pirate("Hunter",0,0,248832,81),
         new Pirate("Blunderbuss",0,0,2985984,243),

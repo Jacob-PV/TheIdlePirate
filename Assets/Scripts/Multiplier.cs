@@ -44,8 +44,13 @@ public class Multiplier
             m_currentMultiple = m_level * m_multipleInterval + 1;
             if(!m_isRuby)
                 m_upgradeCost = m_costBase * Math.Pow(2, m_level);
-            else  
-                m_upgradeCost = Math.Round(m_costBase * Math.Pow(2, m_level)); 
+            else 
+            { 
+                if(m_level == 0)
+                    m_upgradeCost = m_costBase;
+                else
+                    m_upgradeCost = Math.Round(m_costBase * 1.15 * m_level);
+            } 
             UpdateText();
             m_didUpdate = true;
         }
@@ -79,8 +84,13 @@ public class Multiplier
             m_currentMultiple = 1;
         if(!m_isRuby)
             m_upgradeCost = m_costBase * Math.Pow(2, m_level);
-        else  
-            m_upgradeCost = Math.Round(m_costBase * Math.Pow(2, m_level)); 
+        else 
+        { 
+            if(m_level == 0)
+                m_upgradeCost = m_costBase;
+            else
+                m_upgradeCost = Math.Round(m_costBase * 1.15 * m_level);
+        }  
         UpdateText();
     }
 

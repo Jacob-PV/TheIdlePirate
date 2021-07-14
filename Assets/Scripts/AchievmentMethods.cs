@@ -63,6 +63,7 @@ public partial class Basics : MonoBehaviour
         current[3] = goldPerSec;
         current[4] = doubleIdleUses;
         current[5] = crewLostGreed;
+        current[6] = timesPrestiged;
     }
 
     public void Claim(int i)

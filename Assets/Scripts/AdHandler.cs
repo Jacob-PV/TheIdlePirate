@@ -20,20 +20,20 @@ public partial class Basics : MonoBehaviour, IUnityAdsListener
     //     Advertisement.Initialize("4176969", true);
     //     Advertisement.AddListener(this);
     // }
-    
+
     IEnumerator AdTest()
     {
         adStartTime = DateTime.Now;
         if(!Advertisement.IsReady("rewardedVideo"))
         {
             adLoadingMenu.gameObject.SetActive(true);
-            Debug.Log("Loading Ad");
+            // Debug.Log("Loading Ad");
         }
         while(adWaitTime.Seconds < 5 && !Advertisement.IsReady("rewardedVideo") && !adError)
         {
             adCurrentTime = DateTime.Now;
             adWaitTime = adCurrentTime - adStartTime;
-            Debug.Log(Advertisement.IsReady("rewardedVideo"));
+            // Debug.Log(Advertisement.IsReady("rewardedVideo"));
             yield return null;
         }
         if(Advertisement.IsReady("rewardedVideo"))
@@ -79,25 +79,25 @@ public partial class Basics : MonoBehaviour, IUnityAdsListener
 
     public void OnUnityAdsReady(string placementId)
     {
-        Debug.Log("Ads ready.");
+        // Debug.Log("Ads ready.");
     }
  
     public void OnUnityAdsDidError(string message)
     {
-        Debug.Log("Ad error: " + message);
+        // Debug.Log("Ad error: " + message);
         adError = true;
     }
  
     public void OnUnityAdsDidStart(string placementId)
     {
-        Debug.Log("Ad started.");
+        // Debug.Log("Ad started.");
     }
  
     public void OnUnityAdsDidFinish(string placementId, ShowResult showResult)
     {
         if(placementId == "rewardedVideo" && showResult == ShowResult.Finished)
         {
-            Debug.Log("ran");
+            // Debug.Log("ran");
             numGold += idleGold;
             doubleIdleUses++;
             PlayerPrefs.SetInt("doubleIdleUses", doubleIdleUses);

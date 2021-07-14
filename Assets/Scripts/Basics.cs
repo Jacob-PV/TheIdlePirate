@@ -90,7 +90,7 @@ public partial class Basics : MonoBehaviour
     {
         // ads
         adError = false;
-        Advertisement.Initialize("4176969", true);
+        Advertisement.Initialize("4176969");
         Advertisement.AddListener(this);
 
         // frames
@@ -100,6 +100,7 @@ public partial class Basics : MonoBehaviour
         timesAppOpened = 0; // review test
 
         isFirstRun = true;
+        crewLostGreed = 0;
         totalCrewUpgrades = 0;
         totalShovelClicks = 0;
         doubleIdleUses = 0;
@@ -121,6 +122,7 @@ public partial class Basics : MonoBehaviour
 
         //idle
         currentTime = DateTime.Now;
+        // PlayerPrefs.DeleteAll(); //REMOVE
         Load();
         InitShipText();
         InitCrewText();
@@ -144,6 +146,7 @@ public partial class Basics : MonoBehaviour
             // secTimeAway = 99999;
             GreedPunish();
             numGold += idleGold;
+            totalGold += idleGold;
 
             idelIncome.text = "You earned " + DisplayNumber(idleGold) + " Gold while you were away!";
             idleMenu.gameObject.SetActive(true);
@@ -168,7 +171,7 @@ public partial class Basics : MonoBehaviour
         // review test
         timesAppOpened++;
         PlayerPrefs.SetInt("timesAppOpened",timesAppOpened);
-        if(timesAppOpened == 5)
+        if(timesAppOpened == 10)
         {
             _reviewManager = new ReviewManager();
             StartCoroutine(review());
@@ -183,9 +186,17 @@ public partial class Basics : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // save
-        // if(isFirstRun)
-        //     SaveAll();
+        // background idle gold
+        oldTime = currentTime;
+        currentTime = DateTime.Now;
+        timeAway = currentTime - oldTime;
+        secTimeAway = timeAway.Days * 86400 + timeAway.Hours * 3600 + timeAway.Minutes * 60 + timeAway.Seconds;
+        if(secTimeAway > 1)
+        {
+            idleGold = goldPerSec * secTimeAway;
+            numGold += idleGold;
+            totalGold += idleGold;
+        }
 
         CheckAlerts();
 
@@ -255,7 +266,8 @@ public partial class Basics : MonoBehaviour
         if(prestigeMenu.gameObject.activeSelf || isFirstRun)
         {
             // ^15 ref
-            claimableKeys = Math.Floor(150 * Math.Pow((totalGold/Math.Pow(10,13)),.5) - keys);
+            // claimableKeys = Math.Floor(150 * Math.Pow((totalGold/Math.Pow(10,12)),.5) - keys);
+            CalculateKeys();
             prestigeClaimText.text = claimableKeys + " Skelaton Keys\nClaim";
             if(claimableKeys>0)
                 prestigeButton.interactable = true;
@@ -272,7 +284,7 @@ public partial class Basics : MonoBehaviour
                 + "\nShip Boost: " + DisplayNumber((multPerSec-1)*100, true) + "%"
                 + "\nPermanent Boost: " + DisplayNumber((permMultPerSec-1)*100, true) + "%"
                 + "\nGreed Boost: " + DisplayNumber(greedPercent) + "%"
-                + "\nSkelaton Keys: " + DisplayNumber((keys * 0.05) * 100, true) + "%";
+                + "\nSkelaton Keys: " + DisplayNumber((keys * 0.05) * 100) + "%";
         }
 
         // music
@@ -484,7 +496,7 @@ public partial class Basics : MonoBehaviour
         numGold = double.Parse(PlayerPrefs.GetString("numGold","0"));
         goldPerSec = double.Parse(PlayerPrefs.GetString("goldPerSec","0"));
         currentTime = DateTime.Parse(PlayerPrefs.GetString("currentTime", DateTime.Now.ToString()));
-        totalGold = double.Parse(PlayerPrefs.GetString("totalGold"));
+        totalGold = double.Parse(PlayerPrefs.GetString("totalGold","0"));
 
         // crew
         // foreach(Pirate i in crew)
@@ -492,8 +504,6 @@ public partial class Basics : MonoBehaviour
         //     i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
         //     i.m_clickPower = double.Parse(PlayerPrefs.GetString(i.m_name + ".m_clickPower","0"));
         // }
-        crew[0].m_level = PlayerPrefs.GetInt(crew[0].m_name + ".m_level",1);
-        crew[0].m_clickPower = double.Parse(PlayerPrefs.GetString(crew[0].m_name + ".m_clickPower","1"));
         foreach(Pirate i in crew)
         {
             i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
@@ -503,6 +513,9 @@ public partial class Basics : MonoBehaviour
             //     i.m_tiersBought[j] = bool.Parse(PlayerPrefs.GetString(i.m_name + "tiersBought[" + j + "]", "false"));
             i.m_currentTier = PlayerPrefs.GetInt(i.m_name + "m_currentTier", 0);
         }
+        // set shovel to lvl 1
+        crew[0].m_level = PlayerPrefs.GetInt(crew[0].m_name + ".m_level",1);
+        crew[0].m_clickPower = double.Parse(PlayerPrefs.GetString(crew[0].m_name + ".m_clickPower","1"));
 
         // ship
         foreach(Multiplier i in ship)
@@ -519,7 +532,7 @@ public partial class Basics : MonoBehaviour
         timesPrestiged = PlayerPrefs.GetInt("timesPrestiged",0); // saved in prestige
         foreach(Achievement i in achievements)
         {
-            i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",0);
+            i.m_level = PlayerPrefs.GetInt(i.m_name + ".m_level",1);
         }
 
         // perm
@@ -537,6 +550,10 @@ public partial class Basics : MonoBehaviour
 
         // review
         timesAppOpened = PlayerPrefs.GetInt("timesAppOpened",0);
+
+        // prestige
+        keys = double.Parse(PlayerPrefs.GetString("keys","0"));
+        // timesPrestiged = PlayerPrefs.GetInt("timesPrestiged",0);
     }
 
     private void SaveGold()
@@ -650,6 +667,8 @@ public partial class Basics : MonoBehaviour
         if(musicOn)
         {
             musicOnObject.gameObject.SetActive(true);
+            for(int i = 0; i < numSongs; i++) // extra
+                music[i].Pause();
             music[songIndex].Play();
         }
         else
@@ -670,15 +689,28 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    private bool musicIsPlaying;
     private void MusicUpdater()
     {
+        foreach(AudioSource i in music)
+        {
+            if(i.isPlaying)
+            {
+                musicIsPlaying = true;
+                break;
+            }
+            else
+                musicIsPlaying = false;
+        }
         if(musicOn)
         {
-            if(music[songIndex].isPlaying == false)
+            if(!musicIsPlaying)
             {
                 songIndex++;
                 if(songIndex >= numSongs)
                     songIndex = 0;
+                for(int i = 0; i < numSongs; i++) // extra
+                    music[i].Pause();
                 music[songIndex].Play();
             }
         }
