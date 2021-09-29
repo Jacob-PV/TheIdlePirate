@@ -20,6 +20,8 @@ public partial class Basics : MonoBehaviour
     public Button[] shipUpgradeButton = new Button[numShip];
 
     // METHODS
+
+    // initilize internal text of the ship
     private void InitShipText()
     {
         foreach(Multiplier i in ship)
@@ -28,6 +30,7 @@ public partial class Basics : MonoBehaviour
         }
     }
     
+    // update external text for ship
     private void UpdateShipText()
     {
         for(int i = 0; i < numShip; i++)
@@ -37,6 +40,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // handle upgrading ship item i
     public void UpgradeShip(int i)
     {
         numGold -= ship[i].Upgrade(numGold);
@@ -48,6 +52,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // cacluate total multipliers from ship items
     public void getMultSec()
     {
         multPerSec = 1;
@@ -57,6 +62,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // save ship data, different if after prestige 
     private void SaveShip(bool prestige = false)
     {
         foreach(Multiplier i in ship)
@@ -71,7 +77,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
-    // button
+    // set each ship item button availability
     private void shipButtonColor()
     {
         for(int i = 0; i < numShip; i++)

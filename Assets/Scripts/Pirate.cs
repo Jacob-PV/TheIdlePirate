@@ -107,6 +107,8 @@ public class Pirate
             {
                 return (number / Math.Pow(10,i)).ToString(decimals) + " " + suffix[suffixIndex];
             }
+            if(number/Math.Pow(9,106) > 1)
+                return(number.ToString("0.000E0"));
             suffixIndex++;
         }
         return number.ToString("f0");

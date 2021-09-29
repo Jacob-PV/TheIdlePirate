@@ -8,6 +8,8 @@ using System;
 public partial class Basics : MonoBehaviour
 {
     private int timesPrestiged;
+
+    // handle prestiging
     public void Prestige()
     {
         // reset

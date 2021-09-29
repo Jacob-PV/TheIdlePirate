@@ -26,6 +26,8 @@ public partial class Basics : MonoBehaviour
     private double[] current = new double[numAchievements];
 
     // METHODS
+
+    // update all achievements text 
     public void UpdateAchievementsText()
     {
         // update internal text
@@ -36,14 +38,16 @@ public partial class Basics : MonoBehaviour
             doUpdateAchText = false;
         }
 
-        // update external text
+        // update achievements trackers
         UpdateCurrent();
         
+        // update external text
         for(int i = 0; i < numAchievements; i++)
         {
             // text
             if(!achievements[i].m_maxed)
                 achievmentsHeader[i].text = achievements[i].m_headerText + DisplayNumber(current[i]) + "/" + DisplayNumber(achievements[i].m_tiers[achievements[i].m_level-1]);
+            // handle maxed out achievments
             else
                 achievmentsHeader[i].text = achievements[i].m_headerText + DisplayNumber(current[i]);
             achievmentsClaim[i].text = achievements[i].m_rewardText;
@@ -55,6 +59,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // updates achievement trackers
     private void UpdateCurrent()
     {
         current[0] = totalCrewUpgrades;
@@ -66,6 +71,7 @@ public partial class Basics : MonoBehaviour
         current[6] = timesPrestiged;
     }
 
+    // handle achievement claim button
     public void Claim(int i)
     {
         if(claimButton[i].interactable == true)
@@ -78,12 +84,14 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // initilize all achievement text
     private void InitAchText()
     {
         foreach(Achievement i in achievements)
             i.UpdateText();
     }
 
+    // save achievement and rubies
     private void SaveAch()
     {
         foreach(Achievement i in achievements)

@@ -51,12 +51,14 @@ public partial class Basics : MonoBehaviour
             i.InitText();
     }
 
+    // update gold and multiplier text
     private void UpdateHeaderText()
     {
         goldPerSecText.text = "Gold/Sec: " + DisplayNumber(goldPerSec);
         multPerSecText.text = "Multiplier: " + multPerSec + "x";
     }
     
+    // update text for crew upgrade buttons
     private void UpdateUpgradeText()
     {
         for(int i = 0; i < numCrew; i++)
@@ -76,6 +78,7 @@ public partial class Basics : MonoBehaviour
         SaveCrew();
     }
 
+    // calculate gold per click for shovel
     private void GetShovelPower()
     {
         shovelPower = crew[0].m_clickPower;
@@ -89,7 +92,7 @@ public partial class Basics : MonoBehaviour
     public void Upgrade(int i)
     {
         numGold -= crew[i].Upgrade(numGold);
-        // doUpdateCrewText = crew[i].m_didUpdate;
+
         if(crew[i].m_didUpdate)
         {
             ClickSound();
@@ -97,12 +100,14 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // update all cremates text internally
     private void UpdateCrewText()
     {
         foreach(Pirate i in crew)
             i.UpdateText();
     }
 
+    // save crew data, prestige data
     public void SaveCrew(bool prestige = false)
     {
         // crew
@@ -110,9 +115,7 @@ public partial class Basics : MonoBehaviour
         {
             PlayerPrefs.SetInt(i.m_name + ".m_level", i.m_level);
             PlayerPrefs.SetString(i.m_name + ".m_clickPower", i.m_clickPower.ToString("f0"));
-            // mult
-            // for(int j = 0; j < numMults; j++)
-            //     PlayerPrefs.SetString(i.m_name + "tiersBought[" + j + "]", i.m_tiersBought[j].ToString());
+            Prefs.SetString(i.m_name + "tiersBought[" + j + "]", i.m_tiersBought[j].ToString());
             PlayerPrefs.SetInt(i.m_name + "m_currentTier", i.m_currentTier);
         } 
 
@@ -131,7 +134,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
-    // button
+    // set button availability
     private void colorButton()
     {
         for(int i = 0; i < numCrew; i++)
@@ -143,6 +146,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // open individual multiplier screen for crewmate n
     public void OpenIndMults(int n)
     {
         indMultInt = n;
@@ -150,19 +154,16 @@ public partial class Basics : MonoBehaviour
         indMultMenu.gameObject.SetActive(true);
     }
 
+    // internally and externally update individual multipliers text
     private void UpdateIndMultText()
     {
+        // update multiplier text internally
         foreach(Text i in multText)
             i.text = "2x " + crew[indMultInt].m_name + " GPS";
-        // for(int i = 0; i < numMults; i++)
-        // {
-        //     if(!crew[indMultInt].m_tiersBought[i])
-        //         multButtonText[i].text = DisplayNumber(crew[indMultInt].m_upgradeTierCosts[i]);
-        //     else
-        //         multButtonText[i].text = "Claimed";
-        // }
+
         currentTier = crew[indMultInt].m_currentTier;
-        indMultButtonText.text = DisplayNumber(crew[indMultInt].m_upgradeTierCosts[currentTier]);
+
+        // update external text and check if maxed
         if(currentTier < numMults)
         {
             indMultButtonText.text = DisplayNumber(crew[indMultInt].m_upgradeTierCosts[currentTier]);
@@ -184,13 +185,10 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // set availability of multiplier upgrades
     private void ColorMults()
     {
-        // for(int i = 0; i < numMults; i++)
-        //     if(!crew[indMultInt].m_tiersBought[i] && crew[indMultInt].m_level >= crew[indMultInt].m_upgradeTiers[i] && crew[indMultInt].m_upgradeTierCosts[i] <= numGold)
-        //         multButton[i].interactable = true;
-        //     else
-        //         multButton[i].interactable = false;
+        multButton[i].interactable = false;
         currentTier = crew[indMultInt].m_currentTier;
         if(currentTier < numMults && crew[indMultInt].m_level >= crew[indMultInt].m_upgradeTiers[currentTier] && crew[indMultInt].m_upgradeTierCosts[currentTier] <= numGold)
             indMultButton.interactable = true;
@@ -199,19 +197,18 @@ public partial class Basics : MonoBehaviour
     }
 
     // n in index of mult 0 at top 1 next down...
+    // handle buying individual multiplier
     public void BuyMult()
     {
+        numGold -= crew[indMultInt].m_upgradeTierCosts[crew[indMultInt].m_currentTier];
         crew[indMultInt].m_currentTier++;
-        // crew[indMultInt].m_indMult += 2;
-        // if(crew[indMultInt].m_indMult == 3)
-        //     crew[indMultInt].m_indMult = 2;
         crew[indMultInt].InitText();
         ColorMults();
         UpdateIndMultText();
-        // doUpdateCrewText = true;
         DoUpdateCrewText();
     }
 
+    // handle alert for multipliers
     public GameObject[] muteAlert = new GameObject[numCrew];
     private bool doAlertMult;
     private void CheckMultAlert()
@@ -220,7 +217,7 @@ public partial class Basics : MonoBehaviour
         for(int i = 0; i < numCrew; i++)
         {
             currentTier = crew[i].m_currentTier;
-            if(crew[i].m_upgradeTiers[currentTier] <= crew[i].m_level && crew[i].m_upgradeTierCosts[currentTier] <= numGold)
+            if(currentTier < numMults && crew[i].m_upgradeTiers[currentTier] <= crew[i].m_level && crew[i].m_upgradeTierCosts[currentTier] <= numGold)
             {
                 muteAlert[i].SetActive(true);
                 doAlertMult = true;

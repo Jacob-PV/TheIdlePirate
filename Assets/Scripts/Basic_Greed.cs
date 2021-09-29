@@ -18,6 +18,7 @@ public partial class Basics : MonoBehaviour
     private bool didLoseGreed;
     private int crewLostGreed;
 
+    // set the value fo the greed slider and save it
     private void CheckGreedSlider()
     {
         greedPercent = greed.value;
@@ -28,12 +29,13 @@ public partial class Basics : MonoBehaviour
         UpdateHeaderText();
     }
 
+    // see is each crewmate has a level and if so how many
     private void GreedLevels()
     {
         // make crew Levels array
         for(int i = 0; i < numCrew; i++)
         {
-            // dont take away shovels
+            // dont take away shovels condition
             if(i == 0)
                 crewLevels[i] = 0;
             else
@@ -54,6 +56,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // calculate greed punishment
     private void GreedPunish()
     {
         idleGold = 0;
@@ -63,7 +66,7 @@ public partial class Basics : MonoBehaviour
 
         didLoseGreed = false;
         greeOutputText.text = "Greed";
-        // calculate idle goldl and punish
+        // calculate idle gold and punish
         while(secTimeAway >= 3600)
         {
             GreedLevels();

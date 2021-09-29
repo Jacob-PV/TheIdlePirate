@@ -5,7 +5,6 @@ using UnityEngine.Advertisements;
 using System;
 
 
-
 public partial class Basics : MonoBehaviour, IUnityAdsListener
 {
     private DateTime adStartTime;
@@ -21,6 +20,7 @@ public partial class Basics : MonoBehaviour, IUnityAdsListener
     //     Advertisement.AddListener(this);
     // }
 
+    // ad coroutine
     IEnumerator AdTest()
     {
         adStartTime = DateTime.Now;
@@ -48,6 +48,7 @@ public partial class Basics : MonoBehaviour, IUnityAdsListener
         }
     }
     
+    // handle watch ad button
     public void RunAd()
     {
         // adStartTime = DateTime.Now;
@@ -76,6 +77,8 @@ public partial class Basics : MonoBehaviour, IUnityAdsListener
     //         adErrorMenu.gameObject.SetActive(true);
     //     }
     // }
+
+    // handle official methods
 
     public void OnUnityAdsReady(string placementId)
     {

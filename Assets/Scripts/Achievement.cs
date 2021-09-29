@@ -14,6 +14,7 @@ public class Achievement
     public string m_rewardText;
     public bool m_maxed;
 
+    // initialize achievements
     public Achievement(string name, double[] tiers, int[] rewardTiers, int level = 1)
     {
         m_name = name;
@@ -23,6 +24,7 @@ public class Achievement
         UpdateText();
     }
 
+    // update text displayed on achievement screen
     public void UpdateText()
     {
         m_maxed = (m_level > m_tiers.Length)?true:false;

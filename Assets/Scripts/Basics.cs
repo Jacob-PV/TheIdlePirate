@@ -268,12 +268,12 @@ public partial class Basics : MonoBehaviour
             // ^15 ref
             // claimableKeys = Math.Floor(150 * Math.Pow((totalGold/Math.Pow(10,12)),.5) - keys);
             CalculateKeys();
-            prestigeClaimText.text = claimableKeys + " Skelaton Keys\nClaim";
+            prestigeClaimText.text = DisplayNumber(claimableKeys) + " Skelaton Keys\nClaim";
             if(claimableKeys>0)
                 prestigeButton.interactable = true;
             else
                 prestigeButton.interactable = false;
-            currentKeysText.text = "Current Skeleton Keys: " + keys;
+            currentKeysText.text = "Current Skeleton Keys: " + DisplayNumber(keys);
         }
 
         // breakdown
@@ -482,6 +482,8 @@ public partial class Basics : MonoBehaviour
             {
                 return (number / Math.Pow(10,i)).ToString(decimals) + " " + suffix[suffixIndex];
             }
+            if(number/Math.Pow(9,106) > 1)
+                return(number.ToString("0.000E0"));
             suffixIndex++;
         }
         if(mult)

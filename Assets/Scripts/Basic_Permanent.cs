@@ -8,7 +8,6 @@ public partial class Basics : MonoBehaviour
 {
     // VARS
     public double permMultPerSec;
-    // private bool doUpdatePermText;
     const int numPerm = 4;
     public Multiplier[] perm = {
         new Multiplier("Black Sails",0.02,0,2,true),
@@ -22,6 +21,8 @@ public partial class Basics : MonoBehaviour
     public Button[] permUpgradeButton = new Button[numShip];
 
     // METHODS
+
+    // initernall update permanent multiplier text
     private void InitPermText()
     {
         foreach(Multiplier i in perm)
@@ -30,6 +31,7 @@ public partial class Basics : MonoBehaviour
         }
     }
     
+    // externally update perm text
     private void UpdatePermText()
     {
         for(int i = 0; i < numPerm; i++)
@@ -39,6 +41,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // handle upgradeing perm i
     public void UpgradePerm(int i)
     {
         numRubies -= (int)perm[i].Upgrade(numRubies);
@@ -51,6 +54,7 @@ public partial class Basics : MonoBehaviour
         PlayerPrefs.SetInt("numRubies", numRubies);
     }
 
+    // calculate total multipliers from perms
     public void getpermMultSec()
     {
         permMultPerSec = 1;
@@ -60,6 +64,7 @@ public partial class Basics : MonoBehaviour
         }
     }
 
+    // save perm data
     private void SavePerm()
     {
         foreach(Multiplier i in perm)
@@ -69,7 +74,7 @@ public partial class Basics : MonoBehaviour
         PlayerPrefs.SetString("permMultPerSec", permMultPerSec.ToString());
     }
 
-    // button
+    // perm button availability
     private void permColorButton()
     {
         for(int i = 0; i < numPerm; i++)
