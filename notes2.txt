@@ -1,0 +1,40 @@
+# TheIdlePirate
+
+TODO:
+1.ad
+2.ach
+3.pres
+5.ach pres alert optimize
+
+
+LINKS:
+boat - https://www.dreamstime.com/pixel-art-sea-monster-chasing-ship-image212690096
+timestamp, Jason B has good answer - https://answers.unity.com/questions/171302/save-current-time-on-quit-then-on-relaunch-compare.html
+
+MUSIC:
+tunetank.com
+-fantasy, VictorWayne
+-The Pirates, AlexHattt
+--
+https://tunetank.com/t/1s9c/2032-the-pirates
+--
+
+-- AlexHatt Songs
+mornign coffee
+i'm funny
+--
+
+button click - https://www.zapsplat.com/sound-effect-category/button-clicks/
+--
+Sound from Zapsplat.com
+--
+
+COPYRIGHT:
+wood texture - https://imgur.com/gallery/rJaJaAq
+
+--
+min aspect ration 1.6
+max 2.1
+
+total gold tested up to 9e+307 (in inspector; i think it holds more than the double)
+currently stops converting after 9e+131
